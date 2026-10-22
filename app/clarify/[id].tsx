@@ -3,21 +3,25 @@ import { ActivityIndicator, Pressable, StyleSheet, Text, TextInput, View } from 
 import { router, useLocalSearchParams } from "expo-router";
 
 import { useItemRepository } from "@/src/features/items/data/useItemRepository";
+import { useProjectRepository } from "@/src/features/projects/data/useProjectRepository";
 import type { InboxDecision, Item } from "@/src/features/items/domain/item";
 import { radii, spacing } from "@/src/shared/theme/tokens";
 import { useAppTheme } from "@/src/shared/theme/useAppTheme";
 
-type Step = "question" | "destination" | "next";
+type Step = "question" | "destination" | "next" | "project" | "waiting";
 type Status = "loading" | "ready" | "saving" | "success" | "error";
 
 export default function ClarifyScreen() {
   const colors = useAppTheme();
   const repository = useItemRepository();
+  const projectRepository = useProjectRepository();
   const { id } = useLocalSearchParams<{ id: string }>();
   const [item, setItem] = useState<Item | null>(null);
   const [step, setStep] = useState<Step>("question");
   const [decision, setDecision] = useState<InboxDecision | null>(null);
   const [nextTitle, setNextTitle] = useState("");
+  const [desiredOutcome, setDesiredOutcome] = useState("");
+  const [waitingFor, setWaitingFor] = useState("");
   const [status, setStatus] = useState<Status>("loading");
   const [error, setError] = useState<string | null>(null);
 
@@ -50,10 +54,21 @@ export default function ClarifyScreen() {
       setStatus("ready");
       return;
     }
+    const confirmedDecision = decision.destination === "WAITING"
+      ? { destination: "WAITING" as const, waitingFor }
+      : decision.destination === "PROJECT"
+        ? { destination: "PROJECT" as const, desiredOutcome, firstAction: nextTitle }
+        : decision.destination === "NEXT"
+          ? { destination: "NEXT" as const, title: nextTitle }
+          : decision;
     setStatus("saving");
     setError(null);
     try {
-      await repository.clarifyInboxItem(item.id, decision.destination === "NEXT" ? { destination: "NEXT", title: nextTitle } : decision);
+      if (confirmedDecision.destination === "PROJECT") {
+        await projectRepository.clarifyInboxItemAsProject(item.id, desiredOutcome, nextTitle);
+      } else {
+        await repository.clarifyInboxItem(item.id, confirmedDecision);
+      }
       setStatus("success");
       setTimeout(() => router.replace("/(tabs)/inbox"), 350);
     } catch (cause) {
@@ -70,10 +85,12 @@ export default function ClarifyScreen() {
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={styles.content}>
         <Text style={[styles.kicker, { color: colors.textSecondary }]}>Aclarar entrada</Text>
-        <Text style={[styles.title, { color: colors.text }]}>{step === "next" ? "¿Cuál es el siguiente paso concreto?" : step === "destination" ? "¿Dónde quieres guardarlo?" : "¿Esto requiere alguna acción?"}</Text>
+         <Text style={[styles.title, { color: colors.text }]}>{step === "next" || step === "project" ? "¿Cuál es el siguiente paso concreto?" : step === "waiting" ? "¿Qué respuesta o resultado estás esperando?" : step === "destination" ? "¿Dónde quieres guardarlo?" : "¿Esto requiere alguna acción?"}</Text>
         <Text style={[styles.itemTitle, { color: colors.textSecondary }]}>{item?.title}</Text>
         {step === "question" ? <>
-          <Choice colors={colors} label="Sí, requiere una acción" onPress={() => { setDecision({ destination: "NEXT", title: nextTitle }); setStep("next"); }} />
+           <Choice colors={colors} label="Sí, requiere una acción" onPress={() => { setDecision({ destination: "NEXT", title: nextTitle }); setStep("next"); }} />
+           <Choice colors={colors} label="Sí, es un proyecto de varios pasos" onPress={() => { setDecision({ destination: "PROJECT", desiredOutcome: "", firstAction: nextTitle }); setStep("project"); }} />
+           <Choice colors={colors} label="Estoy esperando una respuesta" onPress={() => { setDecision({ destination: "WAITING", waitingFor: "" }); setStep("waiting"); }} />
           <Choice colors={colors} label="No, no requiere una acción" onPress={() => setStep("destination")} />
         </> : null}
         {step === "destination" ? <>
@@ -81,9 +98,11 @@ export default function ClarifyScreen() {
           <Choice colors={colors} label="Dejar para algún día" onPress={() => setDecision({ destination: "SOMEDAY" })} selected={decision?.destination === "SOMEDAY"} />
           <Choice colors={colors} label="Descartar" onPress={() => setDecision({ destination: "TRASH" })} selected={decision?.destination === "TRASH"} />
         </> : null}
-        {step === "next" ? <TextInput accessibilityLabel="Siguiente paso concreto" autoFocus onChangeText={setNextTitle} value={nextTitle} style={[styles.input, { backgroundColor: colors.surface, borderColor: colors.outline, color: colors.text }]} /> : null}
+         {step === "project" ? <TextInput accessibilityLabel="Resultado deseado del proyecto" placeholder="Resultado deseado" onChangeText={setDesiredOutcome} value={desiredOutcome} style={[styles.input, { backgroundColor: colors.surface, borderColor: colors.outline, color: colors.text }]} /> : null}
+         {step === "next" || step === "project" ? <TextInput accessibilityLabel="Siguiente paso concreto" autoFocus={step === "next"} onChangeText={setNextTitle} value={nextTitle} placeholder="Primera acción concreta" style={[styles.input, { backgroundColor: colors.surface, borderColor: colors.outline, color: colors.text }]} /> : null}
+         {step === "waiting" ? <TextInput accessibilityLabel="Respuesta o persona esperada" autoFocus onChangeText={setWaitingFor} value={waitingFor} placeholder="Persona o respuesta esperada" style={[styles.input, { backgroundColor: colors.surface, borderColor: colors.outline, color: colors.text }]} /> : null}
         {error ? <><Text accessibilityRole="alert" style={[styles.error, { color: colors.error }]}>{error}</Text><Button colors={colors} label="Reintentar" onPress={() => void loadItem()} /></> : null}
-        {step !== "question" ? <Button colors={colors} disabled={status === "saving" || !decision} label={status === "saving" ? "Guardando..." : "Confirmar organización"} onPress={() => void confirm()} /> : null}
+         {step !== "question" ? <Button colors={colors} disabled={status === "saving" || !decision || (step === "waiting" && !waitingFor.trim()) || (step === "project" && (!desiredOutcome.trim() || !nextTitle.trim()))} label={status === "saving" ? "Guardando..." : "Confirmar organización"} onPress={() => void confirm()} /> : null}
         <Pressable accessibilityRole="button" accessibilityLabel="Cancelar aclaración" onPress={() => router.back()}><Text style={[styles.cancel, { color: colors.textSecondary }]}>Cancelar</Text></Pressable>
       </View>
     </View>
