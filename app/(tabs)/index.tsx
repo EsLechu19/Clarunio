@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Pressable, StyleSheet, Text, View } from "react-native";
 import { router, useFocusEffect } from "expo-router";
 
 import { useItemRepository } from "@/src/features/items/data/useItemRepository";
@@ -17,14 +17,18 @@ export default function NowScreen() {
   const [available, setAvailable] = useState<Item[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [undo, setUndo] = useState<Item | null>(null);
+  const [loading, setLoading] = useState(true);
   const today = localDate();
   const load = useCallback(async () => {
     try {
+      setLoading(true);
       setError(null);
       setFocused(await repository.listFocusedNextActions(today));
       setAvailable(await repository.listNextActionsAvailableNow(today));
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "No se pudo cargar Ahora.");
+    } finally {
+      setLoading(false);
     }
   }, [repository, today]);
   useFocusEffect(useCallback(() => { void load(); }, [load]));
@@ -52,7 +56,8 @@ export default function NowScreen() {
     <Screen>
       <PageHero title="¿Qué sigue?" subtitle="Un paso a la vez, en lo que importa." />
       {error ? <Text accessibilityRole="alert" style={{ color: colors.error }}>{error}</Text> : null}
-      {!focused.length && !available.length && !error ? <EmptyState message="Todavía no elegiste en qué enfocarte. Explora tus siguientes acciones." /> : null}
+      {loading ? <ActivityIndicator accessibilityLabel="Cargando Ahora" color={colors.primary} /> : null}
+      {!loading && !focused.length && !available.length && !error ? <EmptyState message="Todavía no elegiste en qué enfocarte. Explora tus siguientes acciones." /> : null}
       <Section title={`En enfoque · ${focused.length}`} colors={colors}>
         {focused.map((item) => <ActionCard key={item.id} item={item} focused colors={colors} onToggleFocus={() => void toggleFocus(item)} onComplete={() => void complete(item)} />)}
       </Section>
