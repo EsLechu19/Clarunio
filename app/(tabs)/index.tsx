@@ -60,7 +60,7 @@ export default function NowScreen() {
 
   return (
     <Screen>
-      <PageHero title="¿Qué sigue?" subtitle="Un paso a la vez, en lo que importa." />
+      <View style={{ gap: spacing.sm }}><PageHero title="¿Qué sigue?" subtitle="Un paso a la vez, en lo que importa." /><View style={{ flexDirection: "row", gap: spacing.lg }}><Pressable onPress={() => router.push("/search")}><Text style={{ color: colors.primary }}>Buscar</Text></Pressable><Pressable onPress={() => router.push("/settings")}><Text style={{ color: colors.primary }}>Ajustes</Text></Pressable></View></View>
       {error ? <Text accessibilityRole="alert" style={{ color: colors.error }}>{error}</Text> : null}
       {loading ? <ActivityIndicator accessibilityLabel="Cargando Ahora" color={colors.primary} /> : null}
       {!loading && !focused.length && !available.length && !error ? <EmptyState message="Todavía no elegiste en qué enfocarte. Explora tus siguientes acciones." /> : null}
