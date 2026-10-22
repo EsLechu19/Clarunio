@@ -47,9 +47,10 @@ Ofrecer una revisión semanal guiada y reanudable, junto con una recuperación v
 - Ahora solo consulta sesiones en curso; iniciar una revisión ocurre al entrar en su acción explícita, evitando sesiones o aprobaciones ficticias.
 - Recuperación abre una aclaración existente, permite omitirla y solo añade foco después de una selección explícita. No realiza mutaciones masivas.
 - Evidencia automatizada: `npm test -- --run` → 6 archivos, 22 pruebas aprobadas; incluye migración, reanudación, cancelación y ausencia de escrituras durante lecturas.
-- Commits de la unidad: `12347d9`, `ae54fe8`, `f8e86d6`, `f16f427`, `9a11a58`.
+- Commits de la unidad: `12347d9`, `ae54fe8`, `f8e86d6`, `f16f427`, `9a11a58`, `2f5bbf5`.
 
 ## Log
 
 - 2026-10-22 — M5 autorizado mediante «prosigue». Se creó la rama `feature/m5-revision-recuperacion` y este documento.
 - 2026-10-22 — Implementación M5 validada con typecheck, lint y pruebas; `npx expo-doctor` mantiene una advertencia preexistente de configuración CNG/native folders y no se modificó `android/`.
+- 2026-10-22 — Comprobación independiente: `npm test -- --run` pasó con 6 archivos y 22 pruebas. Los cambios nativos locales (`android/`, `package.json`, `tsconfig.json`, `expo-env.d.ts`) se conservaron sin incluirlos en commits funcionales.
