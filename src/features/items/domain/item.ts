@@ -14,6 +14,7 @@ export type ItemState = (typeof ITEM_STATES)[number];
 export type Item = {
   id: string;
   title: string;
+  notes?: string | null;
   state: ItemState;
   createdAt: string;
   updatedAt: string;
