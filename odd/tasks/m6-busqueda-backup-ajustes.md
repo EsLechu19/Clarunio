@@ -48,5 +48,5 @@ Permitir encontrar información local, protegerla mediante exportación/importac
 - 2026-10-22 — Decisión: las búsquedas usan `LIKE` parametrizado con escape de comodines y nunca transmiten contenido.
 - 2026-10-22 — Evidencia: `npm install` terminó correctamente (24 vulnerabilidades reportadas por npm audit; no se ejecutó `npm audit fix`).
 - 2026-10-22 — Evidencia: `npm run typecheck` ✅; `npm run lint` ✅; `npm test -- --run` ✅ (8 archivos, 27 tests); `npx expo-doctor` ⚠️ 20/21, falla por configuración nativa preexistente con campos de `app.json` no sincronizados automáticamente.
-- 2026-10-22 — Evidencia de commits: `236e842`, `55aafd6`, `2e5a919`, `58a3f76`, `871bc21`, `55b29c2`, `DOCS_PENDING`.
+- 2026-10-22 — Evidencia de commits: `236e842`, `55aafd6`, `2e5a919`, `58a3f76`, `871bc21`, `55b29c2`, `8670c3b`.
 - 2026-10-22 — Riesgo residual: no se afirma ejecución nativa real de selector, compartir o notificaciones; queda pendiente en dispositivo/emulador Android.
