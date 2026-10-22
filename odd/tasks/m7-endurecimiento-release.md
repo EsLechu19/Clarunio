@@ -16,13 +16,13 @@ Preparar la aplicación para pruebas de campo con cobertura funcional, accesibil
 
 ## Tasks
 
-- [ ] T1 — Auditar estados y accesibilidad de pantallas críticas; corregir bloqueadores comprobables.
-- [ ] T2 — Añadir pruebas de componentes/contratos y fixtures de rendimiento sin datos de usuario.
-- [ ] T3 — Reforzar CI y comandos reproducibles de validación.
-- [ ] T4 — Crear `docs/TEST_PLAN.md` con resultados reales y pendientes Android.
-- [ ] T5 — Crear `docs/USER_GUIDE.md` y `docs/RELEASE_CHECKLIST.md` honestos.
-- [ ] T6 — Revisar README, límites de privacidad y build nativo sin publicar ni firmar producción.
-- [ ] T7 — Ejecutar verificaciones, actualizar evidencia y crear commits locales en español.
+- [x] T1 — Auditar estados y accesibilidad de pantallas críticas; corregir bloqueadores comprobables.
+- [x] T2 — Añadir pruebas de componentes/contratos y fixtures de rendimiento sin datos de usuario.
+- [x] T3 — Reforzar CI y comandos reproducibles de validación.
+- [x] T4 — Crear `docs/TEST_PLAN.md` con resultados reales y pendientes Android.
+- [x] T5 — Crear `docs/USER_GUIDE.md` y `docs/RELEASE_CHECKLIST.md` honestos.
+- [x] T6 — Revisar README, límites de privacidad y build nativo sin publicar ni firmar producción.
+- [x] T7 — Ejecutar verificaciones, actualizar evidencia y crear commits locales en español.
 
 ## Verificación
 
@@ -44,3 +44,8 @@ Preparar la aplicación para pruebas de campo con cobertura funcional, accesibil
 ## Log
 
 - 2026-10-22 — M7 autorizado mediante «prosigue». Se creó la rama `feature/m7-endurecimiento-release` y este documento.
+- 2026-10-22 — Accesibilidad, safe areas, teclado, scroll, estados de carga/error y semántica de progreso: `8e85a25`, `cfa5a42`.
+- 2026-10-22 — Borrado transaccional de datos y preferencias, con regresiones de cancelación: `47d5db2`.
+- 2026-10-22 — Fixture determinista de 5.000 elementos y medición orientativa: `7f26c79`.
+- 2026-10-22 — Validación local: `npm install` pasó con 24 vulnerabilidades; typecheck, lint y 31 tests pasaron. `npx expo-doctor`: 20/21 checks passed; queda advertencia de configuración nativa/prebuild.
+- 2026-10-22 — Pendiente: validación Android real de runtime, selector/compartir de archivos, notificaciones y accesibilidad; no se afirma E2E ni rendimiento de dispositivo.
