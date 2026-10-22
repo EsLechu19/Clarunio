@@ -8,13 +8,14 @@ import { useProjectRepository } from "@/src/features/projects/data/useProjectRep
 import { useAppTheme } from "@/src/shared/theme/useAppTheme";
 import { radii, spacing } from "@/src/shared/theme/tokens";
 import type { Project } from "@/src/features/projects/domain/project";
+import type { Item } from "@/src/features/items/domain/item";
 
 export default function ProjectsScreen() {
   const repository = useProjectRepository();
   const colors = useAppTheme();
-  const [projects, setProjects] = useState<Awaited<ReturnType<typeof repository.listProjects>>>([]);
+  const [projects, setProjects] = useState<Array<Project & { items: Item[] }>>([]);
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
-  const load = useCallback(async () => { setStatus("loading"); try { setProjects(await repository.listProjects()); setStatus("ready"); } catch { setStatus("error"); } }, [repository]);
+  const load = useCallback(async () => { setStatus("loading"); try { const loaded = await repository.listProjects(); setProjects(await Promise.all(loaded.map(async (project) => ({ ...project, items: await repository.listProjectItems(project.id) })))); setStatus("ready"); } catch { setStatus("error"); } }, [repository]);
   useFocusEffect(useCallback(() => { void load(); }, [load]));
   return (
     <Screen>
@@ -27,8 +28,11 @@ export default function ProjectsScreen() {
   );
 }
 
-function ProjectCard({ project, colors, onPress }: { project: Project; colors: ReturnType<typeof useAppTheme>; onPress: () => void }) {
-  return <Pressable accessibilityRole="button" onPress={onPress} style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.outline }]}><Text style={[styles.outcome, { color: colors.text }]}>{project.desiredOutcome}</Text><Text style={{ color: colors.textSecondary }}>Estado: {project.status === "ACTIVE" ? "Activo" : project.status === "SOMEDAY" ? "Algún día" : project.status === "COMPLETED" ? "Completado" : "Archivado"}</Text><Text style={{ color: colors.textSecondary }}>Abrir para ver siguiente acción o espera.</Text></Pressable>;
+function ProjectCard({ project, colors, onPress }: { project: Project & { items: Item[] }; colors: ReturnType<typeof useAppTheme>; onPress: () => void }) {
+  const next = project.items.find((item) => item.state === "NEXT");
+  const waiting = project.items.find((item) => item.state === "WAITING");
+  const summary = next ? `Siguiente acción: ${next.title}` : waiting ? `Esperando: ${waiting.waitingFor}` : project.blockedReason ? `Bloqueado: ${project.blockedReason}` : "Sin siguiente acción definida.";
+  return <Pressable accessibilityRole="button" onPress={onPress} style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.outline }]}><Text style={[styles.outcome, { color: colors.text }]}>{project.desiredOutcome}</Text><Text style={{ color: colors.textSecondary }}>Estado: {project.status === "ACTIVE" ? "Activo" : project.status === "SOMEDAY" ? "Algún día" : project.status === "COMPLETED" ? "Completado" : "Archivado"}</Text><Text style={{ color: colors.textSecondary }}>{summary}</Text></Pressable>;
 }
 
 const styles = StyleSheet.create({ card: { borderRadius: radii.card, borderWidth: 1, gap: spacing.sm, padding: spacing.md }, outcome: { fontSize: 19, fontWeight: "800" } });
