@@ -1,6 +1,6 @@
 import type { SQLiteDatabase } from "expo-sqlite";
 
-const CURRENT_SCHEMA_VERSION = 3;
+const CURRENT_SCHEMA_VERSION = 4;
 
 export async function initializeDatabase(database: SQLiteDatabase): Promise<void> {
   await database.execAsync("PRAGMA journal_mode = WAL; PRAGMA foreign_keys = ON;");
@@ -70,6 +70,21 @@ export async function initializeDatabase(database: SQLiteDatabase): Promise<void
         CREATE INDEX IF NOT EXISTS idx_items_follow_up_at_state ON items (follow_up_at, state);
       `);
       await database.execAsync("PRAGMA user_version = 3");
+    }
+    if (version.user_version < 4) {
+      await database.execAsync(`
+        CREATE TABLE IF NOT EXISTS review_sessions (
+          id TEXT PRIMARY KEY NOT NULL,
+          kind TEXT NOT NULL CHECK (kind IN ('WEEKLY', 'RECOVERY')),
+          state TEXT NOT NULL CHECK (state IN ('IN_PROGRESS', 'COMPLETED', 'CANCELLED')),
+          current_step TEXT NOT NULL,
+          started_at TEXT NOT NULL,
+          finished_at TEXT,
+          summary_json TEXT NOT NULL DEFAULT '{}'
+        );
+        CREATE INDEX IF NOT EXISTS idx_review_sessions_kind_state ON review_sessions (kind, state);
+      `);
+      await database.execAsync("PRAGMA user_version = 4");
     }
   });
 }
