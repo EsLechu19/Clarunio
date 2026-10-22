@@ -4,11 +4,11 @@ import { clarifyInboxItem, validateCaptureText, type InboxDecision, type Item } 
 import type { Project, ProjectStatus } from "../domain/project";
 
 type ProjectRow = { id: string; desired_outcome: string; notes: string | null; status: ProjectStatus; blocked_reason: string | null; created_at: string; updated_at: string; completed_at: string | null };
-type ItemRow = { id: string; title: string; state: Item["state"]; project_id: string | null; waiting_for: string | null; created_at: string; updated_at: string };
+type ItemRow = { id: string; title: string; state: Item["state"]; project_id: string | null; waiting_for: string | null; available_from?: string | null; due_at?: string | null; follow_up_at?: string | null; created_at: string; updated_at: string };
 
 function createLocalId(): string { return globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random()}`; }
 function mapProject(row: ProjectRow): Project { return { id: row.id, desiredOutcome: row.desired_outcome, notes: row.notes, status: row.status, blockedReason: row.blocked_reason, createdAt: row.created_at, updatedAt: row.updated_at, completedAt: row.completed_at }; }
-function mapItem(row: ItemRow): Item { return { id: row.id, title: row.title, state: row.state, projectId: row.project_id, waitingFor: row.waiting_for, createdAt: row.created_at, updatedAt: row.updated_at }; }
+function mapItem(row: ItemRow): Item { return { id: row.id, title: row.title, state: row.state, projectId: row.project_id, waitingFor: row.waiting_for, availableFrom: row.available_from ?? null, dueAt: row.due_at ?? null, followUpAt: row.follow_up_at ?? null, createdAt: row.created_at, updatedAt: row.updated_at }; }
 
 export class SQLiteProjectRepository {
   constructor(private readonly database: SQLiteDatabase) {}
@@ -24,7 +24,7 @@ export class SQLiteProjectRepository {
   }
 
   async listProjectItems(projectId: string): Promise<Item[]> {
-    const rows = await this.database.getAllAsync<ItemRow>("SELECT id, title, state, project_id, waiting_for, created_at, updated_at FROM items WHERE project_id = ? AND state != ? ORDER BY sort_order, created_at", projectId, "TRASH");
+    const rows = await this.database.getAllAsync<ItemRow>("SELECT id, title, state, project_id, waiting_for, available_from, due_at, follow_up_at, created_at, updated_at FROM items WHERE project_id = ? AND state != ? ORDER BY sort_order, created_at", projectId, "TRASH");
     return rows.map(mapItem);
   }
 

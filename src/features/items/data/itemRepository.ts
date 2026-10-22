@@ -168,8 +168,10 @@ export class SQLiteItemRepository implements ItemRepository {
 
   async addFocus(id: string, focusDate: string): Promise<void> {
     const date = validateLocalDate(focusDate);
+    const item = await this.database.getFirstAsync<{ state: Item["state"]; available_from: string | null }>("SELECT state, available_from FROM items WHERE id = ?", id);
+    if (!item || item.state !== "NEXT" || (item.available_from !== null && item.available_from > date)) throw new Error("Solo puedes enfocar una acción NEXT disponible.");
     const result = await this.database.runAsync("INSERT OR IGNORE INTO focus_selections (item_id, focus_date, created_at) SELECT id, ?, ? FROM items WHERE id = ? AND state = 'NEXT' AND (available_from IS NULL OR available_from <= ?)", date, new Date().toISOString(), id, date);
-    if (result.changes !== 1) throw new Error("Solo puedes enfocar una acción NEXT disponible.");
+    if (result.changes < 0) throw new Error("No se pudo actualizar el foco.");
   }
 
   async removeFocus(id: string, focusDate: string): Promise<void> {
