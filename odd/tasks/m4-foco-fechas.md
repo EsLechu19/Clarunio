@@ -70,4 +70,5 @@ Permitir que la persona elija acciones `NEXT` para enfocarse en `Ahora`, manteni
 - `722c7d8` — `feat(fechas): agrega programacion y vencimientos explicitos`
 - `1d220c5` — `test(m4): cubre foco y activacion de fechas`
 - `ed94cd5` — `fix(m4): corrige verificacion de ahora y fechas`
+- `c51a482` — `fix(foco): muestra carga real en Ahora`
 - Pendiente — `docs(m4): registra evidencia de foco y fechas`
