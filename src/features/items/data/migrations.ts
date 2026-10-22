@@ -1,6 +1,6 @@
 import type { SQLiteDatabase } from "expo-sqlite";
 
-const CURRENT_SCHEMA_VERSION = 2;
+const CURRENT_SCHEMA_VERSION = 3;
 
 export async function initializeDatabase(database: SQLiteDatabase): Promise<void> {
   await database.execAsync("PRAGMA journal_mode = WAL; PRAGMA foreign_keys = ON;");
@@ -56,6 +56,20 @@ export async function initializeDatabase(database: SQLiteDatabase): Promise<void
         CREATE INDEX IF NOT EXISTS idx_items_waiting_state ON items (waiting_for, state);
       `);
       await database.execAsync("PRAGMA user_version = 2");
+    }
+    if (version.user_version < 3) {
+      await database.execAsync(`
+        CREATE TABLE IF NOT EXISTS focus_selections (
+          item_id TEXT NOT NULL REFERENCES items(id) ON DELETE CASCADE,
+          focus_date TEXT NOT NULL,
+          created_at TEXT NOT NULL,
+          PRIMARY KEY (item_id, focus_date)
+        );
+        CREATE INDEX IF NOT EXISTS idx_focus_selections_date ON focus_selections (focus_date);
+        CREATE INDEX IF NOT EXISTS idx_items_due_at ON items (due_at);
+        CREATE INDEX IF NOT EXISTS idx_items_follow_up_at_state ON items (follow_up_at, state);
+      `);
+      await database.execAsync("PRAGMA user_version = 3");
     }
   });
 }

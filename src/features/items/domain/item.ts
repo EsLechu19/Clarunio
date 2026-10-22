@@ -19,6 +19,10 @@ export type Item = {
   updatedAt: string;
   projectId?: string | null;
   waitingFor?: string | null;
+  availableFrom?: string | null;
+  dueAt?: string | null;
+  followUpAt?: string | null;
+  focusDate?: string | null;
 };
 
 export type InboxDecision =
@@ -31,6 +35,22 @@ export function validateWaitingFor(value: string): string {
   const waitingFor = value.trim();
   if (!waitingFor) throw new Error("Indica qué respuesta o resultado estás esperando.");
   return waitingFor;
+}
+
+export function validateLocalDate(value: string): string {
+  const date = value.trim();
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) throw new Error("Usa una fecha local con formato AAAA-MM-DD.");
+  const parsed = new Date(`${date}T00:00:00`);
+  if (Number.isNaN(parsed.getTime()) || parsed.toISOString().slice(0, 10) !== date) throw new Error("La fecha local no es válida.");
+  return date;
+}
+
+export function validateDueAt(value: string): string {
+  const dueAt = value.trim();
+  if (!dueAt) throw new Error("Indica una fecha de vencimiento válida.");
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dueAt)) return validateLocalDate(dueAt);
+  if (Number.isNaN(Date.parse(dueAt))) throw new Error("Indica una fecha de vencimiento válida.");
+  return dueAt;
 }
 
 export function clarifyInboxItem(item: Item, decision: InboxDecision): Item {
