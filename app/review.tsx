@@ -49,7 +49,7 @@ export default function ReviewScreen() {
   return <Screen>
     <PageHero title="Revisión semanal" subtitle="Comprobemos que tus pendientes siguen claros y actualizados." />
     <Text style={{ color: colors.textSecondary }}>Etapa {stepIndex + 1} de {REVIEW_STEPS.length}: {LABELS[session.currentStep]}</Text>
-    <View style={styles.progress}><View style={[styles.progressFill, { backgroundColor: colors.primary, width: `${((stepIndex + 1) / REVIEW_STEPS.length) * 100}%` }]} /></View>
+     <View accessibilityLabel={`Progreso de revisión: etapa ${stepIndex + 1} de ${REVIEW_STEPS.length}`} accessibilityRole="progressbar" accessibilityValue={{ min: 1, max: REVIEW_STEPS.length, now: stepIndex + 1 }} style={[styles.progress, { backgroundColor: colors.outline }]}><View style={[styles.progressFill, { backgroundColor: colors.primary, width: `${((stepIndex + 1) / REVIEW_STEPS.length) * 100}%` }]} /></View>
     {error ? <Text accessibilityRole="alert" style={{ color: colors.error }}>{error}</Text> : null}
     <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.outline }]}>
       <Text style={[styles.heading, { color: colors.text }]}>{LABELS[session.currentStep]}</Text>

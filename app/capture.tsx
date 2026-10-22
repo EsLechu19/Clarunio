@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 
 import { useItemRepository } from "@/src/features/items/data/useItemRepository";
@@ -34,8 +35,9 @@ export default function CaptureScreen() {
   }
 
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={[styles.container, { backgroundColor: colors.background }]}>
-      <View style={styles.content}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.container}>
+        <View style={styles.content}>
         <Text style={[styles.title, { color: colors.text }]}>¿Qué tienes en mente?</Text>
         <TextInput
           accessibilityLabel="Texto de captura"
@@ -51,8 +53,9 @@ export default function CaptureScreen() {
         <Pressable accessibilityRole="button" accessibilityLabel="Guardar en bandeja" disabled={saving} onPress={() => void saveCapture()} style={({ pressed }) => [styles.button, { backgroundColor: pressed ? colors.primaryPressed : colors.primary, opacity: saving ? 0.7 : 1 }]}>
           {saving ? <ActivityIndicator color="#FFFFFF" /> : <Text style={styles.buttonText}>Guardar en bandeja</Text>}
         </Pressable>
-      </View>
-    </KeyboardAvoidingView>
+        </View>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
