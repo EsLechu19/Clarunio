@@ -49,3 +49,5 @@ Preparar la aplicación para pruebas de campo con cobertura funcional, accesibil
 - 2026-10-22 — Fixture determinista de 5.000 elementos y medición orientativa: `7f26c79`.
 - 2026-10-22 — Validación local: `npm install` pasó con 24 vulnerabilidades; typecheck, lint y 31 tests pasaron. `npx expo-doctor`: 20/21 checks passed; queda advertencia de configuración nativa/prebuild.
 - 2026-10-22 — Pendiente: validación Android real de runtime, selector/compartir de archivos, notificaciones y accesibilidad; no se afirma E2E ni rendimiento de dispositivo.
+- 2026-10-22 — Comprobación independiente: `npm test -- --run` pasó con 10 archivos y 31 pruebas; el fixture de 5.000 elementos registró 3.73 ms de búsqueda local, medición orientativa fuera de dispositivo.
+- 2026-10-22 — Los cambios nativos locales (`android/`, `app.json`, `package.json`, `package-lock.json`, `tsconfig.json`, `expo-env.d.ts`) se conservaron sin incluirlos en commits funcionales.
