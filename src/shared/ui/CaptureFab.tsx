@@ -1,4 +1,5 @@
-import { Alert, Pressable, StyleSheet, Text } from "react-native";
+import { Pressable, StyleSheet, Text } from "react-native";
+import { router } from "expo-router";
 
 import { radii, spacing } from "../theme/tokens";
 import { useAppTheme } from "../theme/useAppTheme";
@@ -10,7 +11,7 @@ export function CaptureFab() {
     <Pressable
       accessibilityLabel="Capturar"
       accessibilityRole="button"
-      onPress={() => Alert.alert("Captura pendiente", "La captura rápida estará disponible en un próximo hito.")}
+      onPress={() => router.push("/capture")}
       style={({ pressed }) => [styles.button, { backgroundColor: pressed ? colors.primaryPressed : colors.primary }]}
     >
       <Text style={styles.plus}>+</Text>
