@@ -16,14 +16,14 @@ Permitir encontrar información local, protegerla mediante exportación/importac
 
 ## Tasks
 
-- [ ] T1 — Crear repositorios/consultas de búsqueda local y pantalla Buscar.
-- [ ] T2 — Implementar contrato de exportación JSON completo y selector del sistema.
-- [ ] T3 — Implementar importación con validación integral, vista previa y reemplazo transaccional con rollback.
-- [ ] T4 — Crear ajustes persistentes de tema, ayudas y preferencias de revisión.
-- [ ] T5 — Añadir notificaciones locales opt-in para recordatorios explícitos, sin texto sensible por defecto.
-- [ ] T6 — Conectar completadas/papelera y borrado total seguro.
-- [ ] T7 — Añadir pruebas de backup, rollback, búsqueda, preferencias y permiso denegado.
-- [ ] T8 — Ejecutar verificaciones, actualizar evidencia y crear commits locales en español.
+- [x] T1 — Crear repositorios/consultas de búsqueda local y pantalla Buscar.
+- [x] T2 — Implementar contrato de exportación JSON completo y selector del sistema.
+- [x] T3 — Implementar importación con validación integral, vista previa y reemplazo transaccional con rollback.
+- [x] T4 — Crear ajustes persistentes de tema, ayudas y preferencias de revisión.
+- [x] T5 — Añadir notificaciones locales opt-in para recordatorios explícitos, sin texto sensible por defecto.
+- [x] T6 — Conectar completadas/papelera y borrado total seguro.
+- [x] T7 — Añadir pruebas de backup, rollback, búsqueda, preferencias y permiso denegado.
+- [x] T8 — Ejecutar verificaciones, actualizar evidencia y crear commits locales en español.
 
 ## Verificación
 
@@ -44,3 +44,9 @@ Permitir encontrar información local, protegerla mediante exportación/importac
 ## Log
 
 - 2026-10-22 — M6 autorizado mediante «prosigue». Se creó la rama `feature/m6-busqueda-backup-ajustes` y este documento.
+- 2026-10-22 — Decisión: el respaldo usa reemplazo total validado antes de abrir la transacción; los ajustes seguros se guardan como un único registro versionado en `settings`.
+- 2026-10-22 — Decisión: las búsquedas usan `LIKE` parametrizado con escape de comodines y nunca transmiten contenido.
+- 2026-10-22 — Evidencia: `npm install` terminó correctamente (24 vulnerabilidades reportadas por npm audit; no se ejecutó `npm audit fix`).
+- 2026-10-22 — Evidencia: `npm run typecheck` ✅; `npm run lint` ✅; `npm test -- --run` ✅ (8 archivos, 27 tests); `npx expo-doctor` ⚠️ 20/21, falla por configuración nativa preexistente con campos de `app.json` no sincronizados automáticamente.
+- 2026-10-22 — Evidencia de commits: `236e842`, `55aafd6`, `2e5a919`, `58a3f76`, `871bc21`, `55b29c2`, `DOCS_PENDING`.
+- 2026-10-22 — Riesgo residual: no se afirma ejecución nativa real de selector, compartir o notificaciones; queda pendiente en dispositivo/emulador Android.
