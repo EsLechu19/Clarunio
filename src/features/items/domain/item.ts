@@ -19,6 +19,19 @@ export type Item = {
   updatedAt: string;
 };
 
+export type InboxDecision =
+  | { destination: "NEXT"; title: string }
+  | { destination: "SOMEDAY" | "REFERENCE" | "TRASH" };
+
+export function clarifyInboxItem(item: Item, decision: InboxDecision): Item {
+  if (item.state !== "INBOX") {
+    throw new Error("Solo se pueden aclarar entradas que siguen en la bandeja.");
+  }
+
+  const title = decision.destination === "NEXT" ? validateCaptureText(decision.title) : item.title;
+  return { ...item, title, state: decision.destination, updatedAt: new Date().toISOString() };
+}
+
 export function validateCaptureText(value: string): string {
   const title = value.trim();
   if (!title) {
