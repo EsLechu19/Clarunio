@@ -1,7 +1,6 @@
-import { useColorScheme } from "react-native";
-
-import { themeTokens, type ThemeColors } from "./tokens";
+import type { ThemeColors } from "./tokens";
+import { useThemePreferences } from "./ThemeProvider";
 
 export function useAppTheme(): ThemeColors {
-  return themeTokens[useColorScheme() === "dark" ? "dark" : "light"];
+  return useThemePreferences().colors;
 }
