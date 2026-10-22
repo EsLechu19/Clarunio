@@ -6,7 +6,7 @@ import { SQLiteReviewRepository } from "@/src/features/review/data/reviewReposit
 function database() {
   return {
     execAsync: vi.fn().mockResolvedValue(undefined),
-    getFirstAsync: vi.fn(async (query: string) => query.includes("user_version") ? { user_version: 3 } : null),
+    getFirstAsync: vi.fn(async (query: string): Promise<any> => query.includes("user_version") ? { user_version: 3 } : null),
     getAllAsync: vi.fn().mockResolvedValue([]),
     runAsync: vi.fn().mockResolvedValue({ changes: 1, lastInsertRowId: 0 }),
     withTransactionAsync: vi.fn(async (callback: () => Promise<void>) => callback())

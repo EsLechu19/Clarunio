@@ -65,8 +65,10 @@ export class SQLiteReviewRepository {
   async complete(session: ReviewSession, summary: ReviewSummary): Promise<ReviewSession> { return this.update(session.id, { currentStep: "CLOSURE", summary, state: "COMPLETED", finishedAt: new Date().toISOString() }); }
 
   private async update(idValue: string, values: { currentStep: ReviewStep; summary: ReviewSummary; state: ReviewSession["state"]; finishedAt: string | null }): Promise<ReviewSession> {
-    const result = await this.database.runAsync("UPDATE review_sessions SET current_step = ?, state = ?, finished_at = ?, summary_json = ? WHERE id = ? AND state = 'IN_PROGRESS'", values.currentStep, values.state, values.finishedAt, JSON.stringify(values.summary), idValue);
-    if (result.changes !== 1) throw new Error("La sesión ya no está disponible.");
+    await this.database.withTransactionAsync(async () => {
+      const result = await this.database.runAsync("UPDATE review_sessions SET current_step = ?, state = ?, finished_at = ?, summary_json = ? WHERE id = ? AND state = 'IN_PROGRESS'", values.currentStep, values.state, values.finishedAt, JSON.stringify(values.summary), idValue);
+      if (result.changes !== 1) throw new Error("La sesión ya no está disponible.");
+    });
     const row = await this.database.getFirstAsync<SessionRow>("SELECT * FROM review_sessions WHERE id = ?", idValue);
     if (!row) throw new Error("No se pudo leer la sesión actualizada.");
     return mapSession(row);
