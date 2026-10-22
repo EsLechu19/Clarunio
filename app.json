@@ -1,0 +1,14 @@
+{
+  "expo": {
+    "name": "Clarunio",
+    "slug": "clarunio",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "scheme": "clarunio",
+    "android": {
+      "package": "com.clarunio.app"
+    },
+    "plugins": ["expo-router"]
+  }
+}
