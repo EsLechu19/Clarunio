@@ -44,7 +44,7 @@ describe("Clarunio M4 foco y fechas", () => {
   it("completa y elimina el foco dentro de la misma transacción, sin restaurarlo al deshacer", async () => {
     const db = database();
     db.runAsync.mockResolvedValue({ changes: 1, lastInsertRowId: 0 });
-    db.getFirstAsync.mockImplementation(async (query: string) => query.includes("user_version") ? { user_version: 3 } : { id: "item-1", title: "Acción", state: "DONE", project_id: null, waiting_for: null, created_at: "2026-10-22", updated_at: "2026-10-22" });
+    db.getFirstAsync.mockImplementation(async (query: string): Promise<any> => query.includes("user_version") ? { user_version: 3 } : { id: "item-1", title: "Acción", state: "DONE", project_id: null, waiting_for: null, available_from: null, due_at: null, follow_up_at: null, created_at: "2026-10-22", updated_at: "2026-10-22" });
     const repository = new SQLiteItemRepository(db as never);
     await repository.completeAction("item-1");
     await repository.undoCompletion("item-1");
