@@ -1,4 +1,5 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import { router } from "expo-router";
 
 import type { Item } from "@/src/features/items/domain/item";
 import { radii, spacing } from "../theme/tokens";
@@ -9,10 +10,16 @@ export function ItemList({ items }: { items: Item[] }) {
   return (
     <View style={styles.list}>
       {items.map((item) => (
-        <View key={item.id} style={[styles.item, { backgroundColor: colors.surface, borderColor: colors.outline }]}>
+        <Pressable
+          accessibilityLabel={`Aclarar ${item.title}`}
+          accessibilityRole="button"
+          key={item.id}
+          onPress={() => router.push(`/clarify/${item.id}`)}
+          style={({ pressed }) => [styles.item, { backgroundColor: colors.surface, borderColor: colors.outline, opacity: pressed ? 0.75 : 1 }]}
+        >
           <Text style={[styles.marker, { color: colors.primary }]}>✦</Text>
           <Text style={[styles.title, { color: colors.text }]}>{item.title}</Text>
-        </View>
+        </Pressable>
       ))}
     </View>
   );
