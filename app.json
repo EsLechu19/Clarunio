@@ -9,6 +9,9 @@
     "android": {
       "package": "com.clarunio.app"
     },
-    "plugins": ["expo-router"]
+    "plugins": [
+      "expo-router",
+      "expo-sqlite"
+    ]
   }
 }

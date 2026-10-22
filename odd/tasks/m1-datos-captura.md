@@ -14,12 +14,12 @@ Hacer funcional la captura local y la Bandeja de Clarunio con SQLite como fuente
 
 ## Tasks
 
-- [ ] T1 — Añadir Expo SQLite SDK 57, migración inicial y tipos de dominio para Item.
-- [ ] T2 — Implementar repositorio SQLite parametrizado con captura y consulta de bandeja.
-- [ ] T3 — Conectar el FAB y la pantalla de captura; controlar carga, éxito, error y doble toque.
-- [ ] T4 — Conectar Bandeja a datos reales con estados vacío, carga y error recuperable.
-- [ ] T5 — Añadir pruebas de dominio/repositorio y actualizar documentación.
-- [ ] T6 — Ejecutar verificaciones, registrar evidencia y crear commits locales por unidad.
+- [x] T1 — Añadir Expo SQLite SDK 57, migración inicial y tipos de dominio para Item.
+- [x] T2 — Implementar repositorio SQLite parametrizado con captura y consulta de bandeja.
+- [x] T3 — Conectar el FAB y la pantalla de captura; controlar carga, éxito, error y doble toque.
+- [x] T4 — Conectar Bandeja a datos reales con estados vacío, carga y error recuperable.
+- [x] T5 — Añadir pruebas de dominio/repositorio y actualizar documentación.
+- [x] T6 — Ejecutar verificaciones, registrar evidencia y crear commits locales por unidad.
 
 ## Verificación
 
@@ -40,3 +40,6 @@ Hacer funcional la captura local y la Bandeja de Clarunio con SQLite como fuente
 ## Log
 
 - 2026-10-22 — M1 autorizado. Se inicializó Git local y se creó la rama `feature/m1-datos-captura`; pendiente implementar.
+- 2026-10-22 — Se añadió `expo-sqlite` compatible con Expo SDK 57, migración idempotente versión 1 para `items` e índices, dominio `Item` y repositorio parametrizado. Commit: `f4cc4b4 feat(datos): establece SQLite y repositorio de bandeja`.
+- 2026-10-22 — Se conectó `SQLiteProvider`, captura rápida desde el FAB y Bandeja con carga, vacío, contenido, contador real y error reintentable. Commit: `44282bc feat(captura): conecta captura rápida y bandeja real`.
+- 2026-10-22 — Evidencia: `npm install` correcto (696 paquetes auditados; 24 vulnerabilidades informadas por npm), `npm run typecheck` correcto, `npm run lint` correcto, `npm test -- --run` correcto (2 archivos, 6 pruebas), `npx expo-doctor` correcto (21/21 comprobaciones). No se ejecutó runtime nativo Android en este entorno.
