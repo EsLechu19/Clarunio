@@ -15,8 +15,8 @@ Usar el APK generado por EAS en un periodo personal de 14 días para observar fr
 
 ## Tasks
 
-- [ ] T1 — Documentar instalación del APK y matriz de recorridos Android.
-- [ ] T2 — Registrar la validación inicial reportada por el propietario.
+- [x] T1 — Documentar instalación del APK y matriz de recorridos Android.
+- [x] T2 — Registrar la validación inicial reportada por el propietario.
 - [ ] T3 — Mantener bitácora diaria de uso real durante 14 días.
 - [ ] T4 — Registrar y priorizar fricciones, errores y regresiones.
 - [ ] T5 — Practicar exportación/restauración en instalación de prueba.
@@ -24,11 +24,10 @@ Usar el APK generado por EAS en un periodo personal de 14 días para observar fr
 
 ## Verificación
 
-- APK instalado desde EAS en Android.
-- Recorridos M0–M7 completados manualmente.
-- Persistencia comprobada tras cierre y reapertura.
-- Exportación e importación probadas.
-- Permisos y accesibilidad revisados.
+- Evidencia documental T1: `docs/BETA_CHECKLIST.md`, commit `faac265` (`docs(m8): agrega checklist de beta privada`).
+- Evidencia documental T2: `docs/FEEDBACK_LOG.md`, observación `OBS-001`, commit de registro: este commit.
+- El propietario informó instalación del APK desde EAS y funcionamiento de los recorridos M0–M7; no se inventan modelo, build ni resultados no adjuntados.
+- Persistencia, exportación/importación, permisos y accesibilidad permanecen pendientes de ejecución y registro durante la beta.
 - Bitácora de 14 días completada antes de declarar beta cerrada.
 
 ## Alcance autorizado
@@ -41,3 +40,4 @@ Usar el APK generado por EAS en un periodo personal de 14 días para observar fr
 ## Log
 
 - 2026-10-22 — M8 autorizado. El propietario informó que instaló el APK y que los recorridos funcionan; se creó la rama `feature/m8-beta-privada`.
+- 2026-10-22 — T1 documentado en `docs/BETA_CHECKLIST.md` (commit `faac265`). T2 registrado como observación limitada `OBS-001` en `docs/FEEDBACK_LOG.md`; no equivale a completar la beta ni la cadencia de 14 días.
