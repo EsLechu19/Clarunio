@@ -24,8 +24,8 @@ Usar el APK generado por EAS en un periodo personal de 14 días para observar fr
 
 ## Verificación
 
-- Evidencia documental T1: `docs/BETA_CHECKLIST.md`, commit `faac265` (`docs(m8): agrega checklist de beta privada`).
-- Evidencia documental T2: `docs/FEEDBACK_LOG.md`, observación `OBS-001`, commit de registro: este commit.
+- Evidencia documental T1: `docs/BETA_CHECKLIST.md`, commit `faac2653adcaf3c410a8b1f49071487614e5f3b9` (`docs(m8): agrega checklist de beta privada`).
+- Evidencia documental T2: `docs/FEEDBACK_LOG.md`, observación `OBS-001`, commit `3b2baa0e47d30acfc1e95e8b96c4ce399cc354d0` (`docs(m8): registra validacion inicial de la beta`).
 - El propietario informó instalación del APK desde EAS y funcionamiento de los recorridos M0–M7; no se inventan modelo, build ni resultados no adjuntados.
 - Persistencia, exportación/importación, permisos y accesibilidad permanecen pendientes de ejecución y registro durante la beta.
 - Bitácora de 14 días completada antes de declarar beta cerrada.
@@ -40,4 +40,4 @@ Usar el APK generado por EAS en un periodo personal de 14 días para observar fr
 ## Log
 
 - 2026-10-22 — M8 autorizado. El propietario informó que instaló el APK y que los recorridos funcionan; se creó la rama `feature/m8-beta-privada`.
-- 2026-10-22 — T1 documentado en `docs/BETA_CHECKLIST.md` (commit `faac265`). T2 registrado como observación limitada `OBS-001` en `docs/FEEDBACK_LOG.md`; no equivale a completar la beta ni la cadencia de 14 días.
+- 2026-10-22 — T1 documentado en `docs/BETA_CHECKLIST.md` (commit `faac2653adcaf3c410a8b1f49071487614e5f3b9`). T2 registrado como observación limitada `OBS-001` en `docs/FEEDBACK_LOG.md` (commit `3b2baa0e47d30acfc1e95e8b96c4ce399cc354d0`); no equivale a completar la beta ni la cadencia de 14 días.
