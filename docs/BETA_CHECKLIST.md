@@ -10,13 +10,16 @@ Este checklist documenta la instalación y la observación de la beta privada de
 - APK / enlace de EAS: `________________________________________`
 - Build ID de EAS: `________________________________________`
 - Commit de origen: `________________________________________`
-- Versión visible de la app: `________________________________________`
+- Perfil EAS: `preview` — APK instalable de beta privada
+- Versión visible de la app: `0.1.0`
 - Dispositivo / modelo: `________________________________________`
 - Versión de Android: `________________________________________`
 - API level: `________________________________________`
 - Zona horaria: `________________________________________`
 - Responsable: `________________________________________`
 - Evidencia general (capturas, exportaciones o notas): `________________________________________`
+
+Estado actual: el propietario informó que instaló el APK y que los recorridos previstos funcionan. La matriz detallada y la cadencia de 14 días todavía deben completarse con los datos del dispositivo y del build.
 
 ## 1. Instalación y arranque
 
