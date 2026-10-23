@@ -9,7 +9,7 @@ Este checklist documenta la instalación y la observación de la beta privada de
 - Fecha real de cierre: `____-__-__`
 - APK / enlace de EAS: `https://expo.dev/accounts/esau_01/projects/clarunio/builds/37a27928-320c-4cb4-890c-f1cffc8a784b`
 - Build ID de EAS: `37a27928-320c-4cb4-890c-f1cffc8a784b`
-- Commit de origen: `________________________________________`
+- Commit de origen: `no informado por EAS`
 - Perfil EAS: `preview` — APK instalable de beta privada
 - Versión visible de la app: `0.1.0`
 - Dispositivo / modelo: `moto g54 5G`
