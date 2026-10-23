@@ -4,19 +4,19 @@ Este checklist documenta la instalación y la observación de la beta privada de
 
 ## Identidad de la prueba
 
-- Fecha de inicio: `____-__-__`
-- Fecha prevista de cierre (14 días): `____-__-__`
+- Fecha de inicio: `2026-10-23`
+- Fecha prevista de cierre (14 días): `2026-11-05`
 - Fecha real de cierre: `____-__-__`
 - APK / enlace de EAS: `https://expo.dev/accounts/esau_01/projects/clarunio/builds/37a27928-320c-4cb4-890c-f1cffc8a784b`
 - Build ID de EAS: `37a27928-320c-4cb4-890c-f1cffc8a784b`
 - Commit de origen: `________________________________________`
 - Perfil EAS: `preview` — APK instalable de beta privada
 - Versión visible de la app: `0.1.0`
-- Dispositivo / modelo: `________________________________________`
-- Versión de Android: `________________________________________`
-- API level: `________________________________________`
-- Zona horaria: `________________________________________`
-- Responsable: `________________________________________`
+- Dispositivo / modelo: `moto g54 5G`
+- Versión de Android: `13`
+- API level: `33` — derivado de Android 13
+- Zona horaria: `GMT-5`
+- Responsable: `pendiente`
 - Evidencia general (capturas, exportaciones o notas): `________________________________________`
 
 Estado actual: el propietario informó que instaló el APK y que los recorridos previstos funcionan. La matriz detallada y la cadencia de 14 días todavía deben completarse con los datos del dispositivo y del build.
