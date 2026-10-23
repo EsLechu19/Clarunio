@@ -16,7 +16,7 @@ Este checklist documenta la instalación y la observación de la beta privada de
 - Versión de Android: `13`
 - API level: `33` — derivado de Android 13
 - Zona horaria: `GMT-5`
-- Responsable: `pendiente`
+- Responsable: `Esaú Lechuga Monge`
 - Evidencia general (capturas, exportaciones o notas): `________________________________________`
 
 Estado actual: el propietario informó que instaló el APK y que los recorridos previstos funcionan. La matriz detallada y la cadencia de 14 días todavía deben completarse con los datos del dispositivo y del build.
