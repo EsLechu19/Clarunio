@@ -61,8 +61,10 @@ Dar vida a la interfaz existente sin inventar negocio: mejorar jerarquía, tarje
 - `d06c5cf` — `feat(ui): mejora captura y aclaracion`
 - `726f418` — `feat(ui): unifica feedback y estados restantes`
 - `7890093` — `test(ui): cubre contratos visuales y movimiento`
+- `5b6938a` — `docs(ui): registra la iteracion visual`
 
 ## Log
 
 - 2026-10-23 — Se autorizó una iteración visual y de motion para corregir la sensación de interfaz plana, sin cambiar el dominio del producto.
 - 2026-10-24 — Se implementaron las cinco unidades locales de UI, motion, pantallas restantes y contratos puros de movimiento. La comprobación visual Android continúa bajo responsabilidad del propietario.
+- 2026-10-24 — Comprobación independiente: `npm test -- --run` pasó con 11 archivos y 33 pruebas. T6 queda pendiente hasta validar el APK con movimiento reducido activado y desactivado.
