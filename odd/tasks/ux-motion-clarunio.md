@@ -87,6 +87,13 @@ Dar vida a la interfaz existente sin inventar negocio: mejorar jerarquía, tarje
 - 2026-10-24 — Se implementaron las cinco unidades locales de UI, motion, pantallas restantes y contratos puros de movimiento. La comprobación visual Android continúa bajo responsabilidad del propietario.
 - 2026-10-24 — Comprobación independiente: `npm test -- --run` pasó con 11 archivos y 33 pruebas. T6 queda pendiente hasta validar el APK con movimiento reducido activado y desactivado.
 - 2026-10-24 — Bug corregido: Expo Go Android fallaba al abrir Clarunio con `Cannot find native module 'ExpoTopicSubscriptionModule'` porque `notificationService.ts` importaba estáticamente `expo-notifications`. La solución detecta Expo Go con `expo-constants`, carga `expo-notifications` de forma dinámica solo cuando corresponde y captura fallos nativos; Ajustes informa que los recordatorios requieren un development build o APK compatible. Se agregaron pruebas unitarias de la política pura, sin inicializar módulos nativos.
+- 2026-10-24 — Corrección visual estructural de `Ahora`: el saludo pasó al hero antes de «¿Qué sigue?», las acciones disponibles se deduplican contra el foco, las acciones usan filas compactas con iconos accesibles y los módulos de Bandeja/revisión dejaron un único CTA discreto. Se mantienen datos reales, fechas `dueAt`, repositorios, undo, errores, carga, dark mode y reduced motion.
+
+## Evidencia de la corrección de Ahora
+
+- `npm run typecheck` — 0 errores.
+- `npm run lint` — 0 errores.
+- `npm test -- --run` — 13 archivos, 37 pruebas aprobadas; incluye el contrato de deduplicación de acciones enfocadas.
 
 ## Evidencia del bug de Expo Go
 
