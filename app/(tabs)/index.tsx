@@ -69,17 +69,19 @@ export default function NowScreen() {
   return (
     <Screen>
       <PageHero title="¿Qué sigue?" subtitle="Un paso a la vez, en lo que importa." />
+      <Text style={[styles.greeting, { color: colors.textSecondary }]}>Buen día</Text>
       <View style={styles.chips}><SummaryChip icon="sunny-outline" label={`${focused.length} en foco`} colors={colors} /><SummaryChip icon="file-tray-outline" label={`${summary.inbox} en bandeja`} colors={colors} /><SummaryChip icon="layers-outline" label={`${summary.projects} proyectos`} colors={colors} /></View>
       {error ? <Text accessibilityRole="alert" style={{ color: colors.error }}>{error}</Text> : null}
       {loading ? <ActivityIndicator accessibilityLabel="Cargando Ahora" color={colors.primary} /> : null}
       {!loading && !focused.length && !available.length && !error ? <EmptyState message="Todavía no elegiste en qué enfocarte. Explora tus siguientes acciones." /> : null}
-      <Section title={`En enfoque · ${focused.length}`} colors={colors}>
+      <Section title="Siguientes acciones" colors={colors}>
         {focused.map((item) => <Motion key={item.id}><ActionCard item={item} focused colors={colors} onToggleFocus={() => void toggleFocus(item)} onComplete={() => void complete(item)} /></Motion>)}
       </Section>
       <Section title={`Todas las siguientes · ${available.length}`} colors={colors}>
         {available.map((item) => <Motion key={item.id}><ActionCard item={item} focused={focused.some((focusedItem) => focusedItem.id === item.id)} colors={colors} onToggleFocus={() => void toggleFocus(item)} onComplete={() => void complete(item)} /></Motion>)}
       </Section>
       {undo ? <Pressable accessibilityRole="button" onPress={() => void undoCompletion()}><Text style={{ color: colors.primary }}>Deshacer completado: {undo.title}</Text></Pressable> : null}
+      <Card tone="soft"><View style={styles.inboxHeading}><View><Text style={[styles.heading, { color: colors.text }]}>Bandeja</Text><Text style={{ color: colors.textSecondary }}>{summary.inbox} {summary.inbox === 1 ? "captura pendiente" : "capturas pendientes"}</Text></View><ActionButton icon="arrow-forward" variant="secondary" onPress={() => router.push("/(tabs)/inbox")}>Abrir</ActionButton></View></Card>
       <Card tone="soft"><Text style={[styles.heading, { color: colors.text }]}>Mantener el sistema claro</Text><Text style={{ color: colors.textSecondary }}>Revisá tus pendientes o volvé a organizarte cuando lo necesites.</Text><View style={styles.actions}><ActionButton icon="refresh-outline" onPress={() => router.push("/review")}>{reviewSessions.some((session) => session.kind === "WEEKLY") ? "Continuar revisión" : "Iniciar revisión"}</ActionButton><ActionButton icon="sparkles-outline" variant="secondary" onPress={() => router.push("/recovery")}>{reviewSessions.some((session) => session.kind === "RECOVERY") ? "Continuar recuperación" : "Volver a organizarme"}</ActionButton></View></Card>
     </Screen>
   );
@@ -102,4 +104,4 @@ function ActionCard({ item, focused, colors, onToggleFocus, onComplete }: { item
   </Card>;
 }
 
-const styles = StyleSheet.create({ section: { gap: spacing.sm }, heading: { fontSize: 20, fontWeight: "800" }, title: { fontSize: 17, fontWeight: "700", lineHeight: 24 }, actions: { flexDirection: "row", flexWrap: "wrap", gap: spacing.sm, marginTop: spacing.xs }, chips: { flexDirection: "row", flexWrap: "wrap", gap: spacing.sm }, chip: { alignItems: "center", borderRadius: radii.pill, flexDirection: "row", gap: spacing.xs, paddingHorizontal: spacing.md, paddingVertical: spacing.sm } });
+const styles = StyleSheet.create({ section: { gap: spacing.sm }, greeting: { fontSize: 17, fontWeight: "700", marginTop: -spacing.md }, heading: { fontSize: 20, fontWeight: "800" }, title: { fontSize: 17, fontWeight: "700", lineHeight: 24 }, actions: { flexDirection: "row", flexWrap: "wrap", gap: spacing.sm, marginTop: spacing.xs }, chips: { flexDirection: "row", flexWrap: "wrap", gap: spacing.sm }, chip: { alignItems: "center", borderRadius: radii.pill, flexDirection: "row", gap: spacing.xs, paddingHorizontal: spacing.md, paddingVertical: spacing.sm }, inboxHeading: { alignItems: "center", flexDirection: "row", justifyContent: "space-between" } });
