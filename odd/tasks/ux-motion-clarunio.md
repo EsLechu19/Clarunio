@@ -36,7 +36,19 @@ Dar vida a la interfaz existente sin inventar negocio: mejorar jerarquía, tarje
 - Se usará React Native Reanimated ya alineado con Expo SDK 57.
 - Commits locales por unidad, con mensajes convencionales en español.
 - Comentarios naturales en español y sin referencias a IA.
-- No integrar el logo hasta que el propietario entregue el archivo final.
+- La nueva iteración autorizada integra el wordmark entregado en `img/Imagen de ChatGPT 24 oct 2026, 17_46_19-3.png`; mantiene fallback textual seguro si la imagen falla.
+
+## Nueva decisión visual — 2026-10-24
+
+- Se adopta como dirección principal la referencia del propietario: fondo lavanda casi blanco, superficies blancas, violeta intenso, títulos grandes y pesados, tarjetas redondeadas con sombra sutil, chips suaves, iconografía Ionicons y FAB circular violeta.
+- `Ahora` prioriza saludo, «¿Qué sigue?», chips con datos reales, «Siguientes acciones» y una tarjeta de Bandeja distinguible. No se agregan porcentajes ni métricas inventadas.
+- `Captura` mantiene el contrato de guardar directamente en `INBOX`, con input protagonista, CTA existente y ayuda visual separada.
+- `Proyectos` usa filtros exclusivamente derivados de estados existentes (`Todos`, `Activos`, `Algún día`) y metadata honesta de siguiente acción/espera/bloqueo; no usa progreso calculado.
+
+## Assets usados
+
+- `img/Imagen de ChatGPT 24 oct 2026, 17_46_19-3.png` — wordmark oscuro horizontal en `BrandHeader`, con fallback `C`.
+- El resto de variantes de `img/` queda disponible para futuras cabeceras o empty states, pero no se carga decorativamente en todas las pantallas.
 
 ## Decisiones
 
@@ -56,12 +68,18 @@ Dar vida a la interfaz existente sin inventar negocio: mejorar jerarquía, tarje
 
 ## Commits
 
-- `e621ab8` — `feat(ui): crea sistema visual y motion accesible`
-- `9e3bcf4` — `feat(ui): mejora Ahora bandeja y proyectos`
-- `d06c5cf` — `feat(ui): mejora captura y aclaracion`
-- `726f418` — `feat(ui): unifica feedback y estados restantes`
-- `7890093` — `test(ui): cubre contratos visuales y movimiento`
-- `5b6938a` — `docs(ui): registra la iteracion visual`
+- `6a253dc` — `feat(ui): aplica identidad visual Clarunio`
+- `3208bb8` — `feat(ui): rediseña inicio y navegación`
+- `e070542` — `feat(ui): rediseña captura aclaracion y proyectos`
+- `bcc25f6` — `test(ui): verifica contratos del rediseño`
+
+## Evidencia de esta iteración
+
+- `npm run typecheck` — 0 errores.
+- `npm run lint` — 0 errores.
+- `npm test -- --run` — 11 archivos, 33 pruebas aprobadas.
+- `npx expo-doctor` — 19/21 comprobaciones aprobadas; permanecen los 2 hallazgos fuera de alcance: carpetas nativas junto con configuración de prebuild, y `expo-notifications` 57.0.23 frente a `~57.0.24`.
+- SHA-256 `img/Imagen de ChatGPT 24 oct 2026, 17_46_19-3.png`: `B2DE692072AF8CA7B14294C02BCA268B2A1BAC16E23FE513967D1B07459C856A`.
 
 ## Log
 
