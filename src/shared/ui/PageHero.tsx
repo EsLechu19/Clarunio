@@ -21,10 +21,10 @@ export function PageHero({ title, subtitle }: { title: string; subtitle: string 
 }
 
 const styles = StyleSheet.create({
-  container: { gap: spacing.xl },
+  container: { gap: spacing.lg },
   header: { alignItems: "center", flexDirection: "row", justifyContent: "space-between" },
   tools: { flexDirection: "row", gap: spacing.md },
   copy: { gap: spacing.sm },
-  title: { fontSize: 32, fontWeight: "800" },
+  title: { fontSize: 36, fontWeight: "900", letterSpacing: -0.7, lineHeight: 42 },
   subtitle: { fontSize: 16, lineHeight: 24 }
 });

@@ -9,4 +9,4 @@ export function Card({ children, tone = "surface" }: PropsWithChildren<{ tone?: 
   return <View style={[styles.card, { backgroundColor: tone === "soft" ? colors.surfaceSoft : colors.surface, borderColor: colors.outline }]}>{children}</View>;
 }
 
-const styles = StyleSheet.create({ card: { borderRadius: radii.card, borderWidth: 1, gap: spacing.sm, padding: spacing.md } });
+const styles = StyleSheet.create({ card: { borderRadius: radii.card, borderWidth: 1, elevation: 1, gap: spacing.sm, padding: spacing.md, shadowColor: "#2C1A63", shadowOffset: { height: 3, width: 0 }, shadowOpacity: 0.06, shadowRadius: 10 } });
