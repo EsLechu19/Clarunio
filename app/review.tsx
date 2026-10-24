@@ -8,6 +8,9 @@ import { Screen } from "@/src/shared/ui/Screen";
 import { PageHero } from "@/src/shared/ui/PageHero";
 import { radii, spacing } from "@/src/shared/theme/tokens";
 import { useAppTheme } from "@/src/shared/theme/useAppTheme";
+import { Card } from "@/src/shared/ui/Card";
+import { ActionButton } from "@/src/shared/ui/ActionButton";
+import { Motion } from "@/src/shared/ui/Motion";
 
 const LABELS: Record<ReviewStep, string> = { INBOX: "Bandeja", NEXT: "Siguientes", WAITING: "Esperando", PROJECTS: "Proyectos", SCHEDULED_SOMEDAY: "Programadas y algún día", CLOSURE: "Cierre" };
 
@@ -51,14 +54,14 @@ export default function ReviewScreen() {
     <Text style={{ color: colors.textSecondary }}>Etapa {stepIndex + 1} de {REVIEW_STEPS.length}: {LABELS[session.currentStep]}</Text>
      <View accessibilityLabel={`Progreso de revisión: etapa ${stepIndex + 1} de ${REVIEW_STEPS.length}`} accessibilityRole="progressbar" accessibilityValue={{ min: 1, max: REVIEW_STEPS.length, now: stepIndex + 1 }} style={[styles.progress, { backgroundColor: colors.outline }]}><View style={[styles.progressFill, { backgroundColor: colors.primary, width: `${((stepIndex + 1) / REVIEW_STEPS.length) * 100}%` }]} /></View>
     {error ? <Text accessibilityRole="alert" style={{ color: colors.error }}>{error}</Text> : null}
-    <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.outline }]}>
+     <Motion><Card>
       <Text style={[styles.heading, { color: colors.text }]}>{LABELS[session.currentStep]}</Text>
       {isClosure ? <Text style={{ color: colors.textSecondary }}>Resumen real: {summary.inbox} en bandeja, {summary.next} siguientes, {summary.waiting} esperando, {summary.projectsWithoutNext} proyectos sin siguiente acción y {summary.scheduledSomeday} programadas o algún día.</Text> : items.length ? items.map((item) => <Text key={item.id} style={{ color: colors.text }}>• {item.title}</Text>) : <Text style={{ color: colors.textSecondary }}>No hay elementos pendientes en esta etapa.</Text>}
-    </View>
-    <View style={styles.actions}>
-      {isClosure ? <Pressable accessibilityRole="button" onPress={() => void finish()}><Text style={{ color: colors.primary }}>Terminar revisión</Text></Pressable> : <Pressable accessibilityRole="button" onPress={() => void next()}><Text style={{ color: colors.primary }}>Siguiente etapa</Text></Pressable>}
-      <Pressable accessibilityRole="button" onPress={() => void pause()}><Text style={{ color: colors.primary }}>Pausar</Text></Pressable>
-      <Pressable accessibilityRole="button" onPress={() => void cancel()}><Text style={{ color: colors.error }}>Cancelar</Text></Pressable>
+     </Card></Motion>
+     <View style={styles.actions}>
+       {isClosure ? <ActionButton icon="checkmark-circle-outline" onPress={() => void finish()}>Terminar revisión</ActionButton> : <ActionButton icon="arrow-forward" onPress={() => void next()}>Siguiente etapa</ActionButton>}
+       <ActionButton icon="pause-outline" variant="secondary" onPress={() => void pause()}>Pausar</ActionButton>
+       <ActionButton icon="close" variant="danger" onPress={() => void cancel()}>Cancelar</ActionButton>
     </View>
     {session.state === "COMPLETED" ? <Text style={{ color: colors.success }}>Revisión terminada. Quedaron visibles los asuntos abiertos.</Text> : null}
   </Screen>;

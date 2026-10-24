@@ -7,6 +7,8 @@ import type { SearchResult } from "@/src/features/search/data/searchRepository";
 import { EmptyState } from "@/src/shared/ui/EmptyState";
 import { PageHero } from "@/src/shared/ui/PageHero";
 import { Screen } from "@/src/shared/ui/Screen";
+import { Card } from "@/src/shared/ui/Card";
+import { Motion } from "@/src/shared/ui/Motion";
 import { radii, spacing } from "@/src/shared/theme/tokens";
 import { useAppTheme } from "@/src/shared/theme/useAppTheme";
 
@@ -32,7 +34,7 @@ export default function SearchScreen() {
     {loading ? <ActivityIndicator color={colors.primary} accessibilityLabel="Buscando" /> : null}
     {error ? <Text accessibilityRole="alert" style={{ color: colors.error }}>{error}</Text> : null}
     {!loading && query.trim() && !results.length && !error ? <EmptyState message="No encontramos coincidencias." /> : null}
-    <View style={styles.list}>{results.map((result) => <Pressable key={`${result.kind}-${result.id}`} accessibilityRole="button" onPress={() => router.push(result.kind === "item" ? `/item/${result.id}` : `/project/${result.id}`)} style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.outline }]}><Text style={[styles.title, { color: colors.text }]}>{result.title}</Text><Text style={{ color: colors.textSecondary }}>{result.kind === "project" ? "Proyecto" : result.state} · {result.subtitle}</Text></Pressable>)}</View>
+    <View style={styles.list}>{results.map((result) => <Motion key={`${result.kind}-${result.id}`}><Card><Pressable accessibilityRole="button" onPress={() => router.push(result.kind === "item" ? `/item/${result.id}` : `/project/${result.id}`)}><Text style={[styles.title, { color: colors.text }]}>{result.title}</Text><Text style={{ color: colors.textSecondary }}>{result.kind === "project" ? "Proyecto" : result.state} · {result.subtitle}</Text></Pressable></Card></Motion>)}</View>
   </Screen>;
 }
 

@@ -9,6 +9,9 @@ import { Screen } from "@/src/shared/ui/Screen";
 import { PageHero } from "@/src/shared/ui/PageHero";
 import { radii, spacing } from "@/src/shared/theme/tokens";
 import { useAppTheme } from "@/src/shared/theme/useAppTheme";
+import { Card } from "@/src/shared/ui/Card";
+import { ActionButton } from "@/src/shared/ui/ActionButton";
+import { Motion } from "@/src/shared/ui/Motion";
 
 export default function RecoveryScreen() {
   const colors = useAppTheme(); const review = useReviewRepository(); const itemsRepository = useItemRepository();
@@ -21,12 +24,12 @@ export default function RecoveryScreen() {
   if (status === "error") return <Screen><Text accessibilityRole="alert" style={{ color: colors.error }}>{error}</Text><Pressable accessibilityRole="button" onPress={() => void load()}><Text style={{ color: colors.primary }}>Reintentar</Text></Pressable></Screen>;
   if (!session || !summary) return null;
   return <Screen><PageHero title="Volver a organizarme" subtitle="Podemos poner tu sistema al día, sin empezar de cero." />
-    <View style={styles.card}><Text style={{ color: colors.text }}>Capturas: {summary.inbox}</Text><Text style={{ color: colors.text }}>Acciones activas: {summary.next}</Text><Text style={{ color: colors.text }}>Proyectos sin siguiente: {summary.projectsWithoutNext}</Text><Text style={{ color: colors.text }}>Esperando: {summary.waiting}</Text></View>
+     <Card><Text style={{ color: colors.text }}>Capturas: {summary.inbox}</Text><Text style={{ color: colors.text }}>Acciones activas: {summary.next}</Text><Text style={{ color: colors.text }}>Proyectos sin siguiente: {summary.projectsWithoutNext}</Text><Text style={{ color: colors.text }}>Esperando: {summary.waiting}</Text></Card>
     <Text style={[styles.heading, { color: colors.text }]}>Una decisión por vez</Text>
-    {inbox.length ? inbox.map((item) => <View key={item.id} style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.outline }]}><Text style={{ color: colors.text }}>{item.title}</Text><View style={styles.actions}><Pressable accessibilityRole="button" onPress={() => router.push(`/clarify/${item.id}`)}><Text style={{ color: colors.primary }}>Abrir para aclarar</Text></Pressable><Pressable accessibilityRole="button" onPress={() => setInbox((current) => current.filter((candidate) => candidate.id !== item.id))}><Text style={{ color: colors.primary }}>Omitir</Text></Pressable></View></View>) : <Text style={{ color: colors.textSecondary }}>No hay capturas para procesar ahora.</Text>}
+     {inbox.length ? inbox.map((item) => <Motion key={item.id}><Card><Text style={{ color: colors.text }}>{item.title}</Text><View style={styles.actions}><ActionButton icon="bulb-outline" onPress={() => router.push(`/clarify/${item.id}`)}>Abrir para aclarar</ActionButton><ActionButton icon="arrow-forward" variant="secondary" onPress={() => setInbox((current) => current.filter((candidate) => candidate.id !== item.id))}>Omitir</ActionButton></View></Card></Motion>) : <Text style={{ color: colors.textSecondary }}>No hay capturas para procesar ahora.</Text>}
     <Text style={[styles.heading, { color: colors.text }]}>Elegir foco ahora (recomendado hasta 3)</Text>
     {next.map((item) => { const checked = selected.includes(item.id); return <Pressable key={item.id} accessibilityRole="checkbox" accessibilityState={{ checked }} onPress={() => setSelected((current) => checked ? current.filter((id) => id !== item.id) : [...current, item.id])}><Text style={{ color: colors.text }}>{checked ? "✓ " : "○ "}{item.title}</Text></Pressable>; })}
-    <View style={styles.actions}><Pressable accessibilityRole="button" onPress={() => void finish()}><Text style={{ color: colors.primary }}>Terminar recuperación</Text></Pressable><Pressable accessibilityRole="button" onPress={() => void cancel()}><Text style={{ color: colors.error }}>Cancelar</Text></Pressable></View>
+     <View style={styles.actions}><ActionButton icon="checkmark-circle-outline" onPress={() => void finish()}>Terminar recuperación</ActionButton><ActionButton icon="close" variant="danger" onPress={() => void cancel()}>Cancelar</ActionButton></View>
   </Screen>;
 }
 function localDate(): string { const date = new Date(); return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`; }
