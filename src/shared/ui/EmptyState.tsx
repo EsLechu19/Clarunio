@@ -1,4 +1,5 @@
 import { StyleSheet, Text, View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
 import { radii, spacing } from "../theme/tokens";
 import { useAppTheme } from "../theme/useAppTheme";
@@ -8,7 +9,7 @@ export function EmptyState({ message }: { message: string }) {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.surface, borderColor: colors.outline }]}>
-      <Text accessibilityLabel="Estado vacío" style={[styles.icon, { color: colors.primary }]}>✦</Text>
+      <Ionicons accessibilityLabel="Estado vacío" color={colors.primary} name="sparkles-outline" size={30} />
       <Text style={[styles.message, { color: colors.text }]}>{message}</Text>
     </View>
   );

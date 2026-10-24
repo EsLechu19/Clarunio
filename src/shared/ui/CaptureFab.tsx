@@ -1,4 +1,5 @@
 import { Pressable, StyleSheet, Text } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 
 import { radii, spacing } from "../theme/tokens";
@@ -14,7 +15,7 @@ export function CaptureFab() {
       onPress={() => router.push("/capture")}
       style={({ pressed }) => [styles.button, { backgroundColor: pressed ? colors.primaryPressed : colors.primary }]}
     >
-      <Text style={styles.plus}>+</Text>
+      <Ionicons color="#FFFFFF" name="add" size={26} />
       <Text style={styles.label}>Capturar</Text>
     </Pressable>
   );
