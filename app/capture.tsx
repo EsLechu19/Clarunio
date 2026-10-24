@@ -52,9 +52,10 @@ export default function CaptureScreen() {
           onChangeText={setText}
           placeholder="Escribe una idea, pendiente o compromiso"
           placeholderTextColor={colors.textSecondary}
-          style={[styles.input, { backgroundColor: colors.surface, borderColor: colors.outline, color: colors.text }]}
+           style={[styles.input, { backgroundColor: colors.surface, borderColor: colors.outline, color: colors.text }]}
           value={text}
-        /></Card>
+         /></Card>
+        <Card tone="soft"><View style={styles.help}><Ionicons color={colors.primary} name="sparkles-outline" size={24} /><View style={styles.helpCopy}><Text style={[styles.helpTitle, { color: colors.text }]}>Después lo aclaramos</Text><Text style={{ color: colors.textSecondary }}>Guardá la idea sin decidir nada ahora. Clarunio la deja en tu bandeja.</Text></View></View></Card>
         {error ? <Text accessibilityRole="alert" style={[styles.error, { color: colors.error }]}>{error}</Text> : null}
         <ActionButton icon="file-tray-outline" disabled={saving} onPress={() => void saveCapture()}>{saving ? "Guardando..." : "Guardar en bandeja"}</ActionButton>
         </View></Motion>
@@ -68,6 +69,7 @@ const styles = StyleSheet.create({
   content: { flex: 1, gap: spacing.lg, padding: spacing.lg, paddingTop: spacing.md },
   close: { alignSelf: "flex-end", minHeight: 48, justifyContent: "center", padding: spacing.xs },
   title: { fontSize: 32, fontWeight: "800" },
-  input: { borderRadius: radii.input, borderWidth: 1, flex: 1, fontSize: 18, padding: spacing.md, textAlignVertical: "top" },
+  input: { borderRadius: radii.input, borderWidth: 1, flex: 1, fontSize: 20, lineHeight: 28, minHeight: 190, padding: spacing.md, textAlignVertical: "top" },
+  help: { alignItems: "flex-start", flexDirection: "row", gap: spacing.sm }, helpCopy: { flex: 1, gap: spacing.xs }, helpTitle: { fontSize: 16, fontWeight: "800" },
   error: { fontSize: 15, lineHeight: 21 },
 });

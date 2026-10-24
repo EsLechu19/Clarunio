@@ -18,15 +18,17 @@ export default function ProjectsScreen() {
   const colors = useAppTheme();
   const [projects, setProjects] = useState<Array<Project & { items: Item[] }>>([]);
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
+  const [filter, setFilter] = useState<"ALL" | "ACTIVE" | "SOMEDAY">("ALL");
   const load = useCallback(async () => { setStatus("loading"); try { const loaded = await repository.listProjects(); setProjects(await Promise.all(loaded.map(async (project) => ({ ...project, items: await repository.listProjectItems(project.id) })))); setStatus("ready"); } catch { setStatus("error"); } }, [repository]);
   useFocusEffect(useCallback(() => { void load(); }, [load]));
   return (
     <Screen>
       <PageHero title="Proyectos" subtitle={status === "loading" ? "Cargando tus proyectos..." : "Resultados que requieren más de un paso."} />
+      <View accessibilityRole="tablist" style={styles.filters}>{(["ALL", "ACTIVE", "SOMEDAY"] as const).map((value) => <Pressable key={value} accessibilityRole="tab" accessibilityState={{ selected: filter === value }} onPress={() => setFilter(value)} style={[styles.filter, { backgroundColor: filter === value ? colors.primary : colors.surfaceSoft }]}><Text style={{ color: filter === value ? "#FFFFFF" : colors.text, fontWeight: "800" }}>{value === "ALL" ? "Todos" : value === "ACTIVE" ? "Activos" : "Algún día"}</Text></Pressable>)}</View>
       {status === "loading" ? <ActivityIndicator color={colors.primary} accessibilityLabel="Cargando proyectos" /> : null}
       {status === "error" ? <Pressable onPress={() => void load()}><Text style={{ color: colors.error }}>No se pudieron cargar los proyectos. Intenta otra vez.</Text></Pressable> : null}
       {status === "ready" && projects.length === 0 ? <EmptyState message="Aún no tienes proyectos. Cuando aparezca uno, podrás ver aquí su resultado deseado y siguiente paso." /> : null}
-       {status === "ready" ? projects.map((project) => <Motion key={project.id}><ProjectCard project={project} colors={colors} onPress={() => router.push(`/project/${project.id}`)} /></Motion>) : null}
+       {status === "ready" ? projects.filter((project) => filter === "ALL" || project.status === filter).map((project) => <Motion key={project.id}><ProjectCard project={project} colors={colors} onPress={() => router.push(`/project/${project.id}`)} /></Motion>) : null}
     </Screen>
   );
 }
@@ -38,4 +40,4 @@ function ProjectCard({ project, colors, onPress }: { project: Project & { items:
   return <Card><Pressable accessibilityRole="button" onPress={onPress}><View style={styles.header}><Ionicons color={colors.primary} name="layers-outline" size={24} /><Text style={[styles.outcome, { color: colors.text }]}>{project.desiredOutcome}</Text></View><Text style={{ color: colors.textSecondary }}>Estado: {project.status === "ACTIVE" ? "Activo" : project.status === "SOMEDAY" ? "Algún día" : project.status === "COMPLETED" ? "Completado" : "Archivado"}</Text><Text style={{ color: colors.text }}>{summary}</Text><Text style={{ color: colors.primary, fontWeight: "700" }}>Ver proyecto <Ionicons color={colors.primary} name="arrow-forward" size={14} /></Text></Pressable></Card>;
 }
 
-const styles = StyleSheet.create({ header: { alignItems: "center", flexDirection: "row", gap: spacing.sm }, outcome: { flex: 1, fontSize: 19, fontWeight: "800" } });
+const styles = StyleSheet.create({ header: { alignItems: "center", flexDirection: "row", gap: spacing.sm }, outcome: { flex: 1, fontSize: 19, fontWeight: "800" }, filters: { flexDirection: "row", flexWrap: "wrap", gap: spacing.sm }, filter: { borderRadius: 999, paddingHorizontal: spacing.md, paddingVertical: spacing.sm } });
