@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ActivityIndicator, Alert, BackHandler, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import Animated, { LinearTransition, ReduceMotion, useAnimatedStyle, useReducedMotion, useSharedValue, withSequence, withTiming } from "react-native-reanimated";
 
@@ -19,6 +19,7 @@ type CaptureStatus = "idle" | "saving" | "success";
 export default function CaptureScreen() {
   const colors = useAppTheme();
   const repository = useItemRepository();
+  const insets = useSafeAreaInsets();
   const reducedMotion = useReducedMotion();
   const responsive = useResponsive();
   const [text, setText] = useState("");
@@ -81,9 +82,9 @@ export default function CaptureScreen() {
   }
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView edges={["left", "right", "bottom"]} style={[styles.container, { backgroundColor: colors.background }]}> 
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.container}>
-        <Motion variant="capture"><ScrollView contentContainerStyle={[styles.content, { paddingHorizontal: responsive.horizontalPadding }]} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
+        <Motion variant="capture"><ScrollView contentContainerStyle={[styles.content, { paddingHorizontal: responsive.horizontalPadding, paddingTop: insets.top + spacing.md }]} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
         <BackButton fallback="/(tabs)/index" label="Cerrar captura" variant="close" onPress={exitCapture} />
         <Text style={[styles.title, { color: colors.text, fontSize: responsive.isCompact ? 28 : 32, lineHeight: responsive.isCompact ? 34 : 40 }]}>¿Qué tienes en mente?</Text>
         <Text style={{ color: colors.textSecondary }}>Anotá primero. Las decisiones vienen después.</Text>
