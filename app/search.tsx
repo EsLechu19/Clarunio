@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import Animated, { FadeIn, FadeOut, LinearTransition, ReduceMotion, useReducedMotion } from "react-native-reanimated";
-import { ActivityIndicator, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 
 import { useSearchRepository } from "@/src/features/search/data/useSearchRepository";
 import type { SearchResult } from "@/src/features/search/data/searchRepository";
 import { EmptyState } from "@/src/shared/ui/EmptyState";
+import { LoadingState } from "@/src/shared/ui/LoadingState";
 import { PageHero } from "@/src/shared/ui/PageHero";
 import { Screen } from "@/src/shared/ui/Screen";
 import { Card } from "@/src/shared/ui/Card";
@@ -61,7 +62,7 @@ export default function SearchScreen() {
       </Animated.View>
       <TextInput accessibilityLabel="Buscar en acciones, notas y proyectos" onChangeText={setQuery} placeholder="Busca algo que recuerdes" placeholderTextColor={colors.textSecondary} style={[styles.input, { color: colors.text }]} value={query} />
     </View>
-    {loading ? <View style={styles.loadingRow}><ActivityIndicator color={colors.primary} accessibilityLabel="Buscando" /><Text style={{ color: colors.textSecondary }}>Buscando…</Text></View> : null}
+    {loading ? <LoadingState accessibilityLabel="Buscando en Clarunio" message="Buscando…" /> : null}
     {error ? <Text accessibilityRole="alert" style={{ color: colors.error }}>{error}</Text> : null}
     {!loading && !query.trim() ? <EmptyState icon="search-outline" message="Busca en tus acciones, notas y proyectos para volver a encontrar lo importante." /> : null}
     {!loading && query.trim() && !results.length && !error ? <EmptyState icon="search-outline" message={`No encontramos coincidencias para “${query.trim()}”.`} actionLabel="Limpiar búsqueda" onAction={clearSearch} /> : null}
@@ -70,4 +71,4 @@ export default function SearchScreen() {
   </Screen>;
 }
 
-const styles = StyleSheet.create({ searchBox: { alignItems: "center", borderRadius: radii.input, borderWidth: 2, flexDirection: "row", gap: spacing.sm, paddingHorizontal: spacing.md }, searchIcon: { alignItems: "center", height: 44, justifyContent: "center", width: 44 }, input: { flex: 1, fontSize: 17, minHeight: 56 }, clearButton: { alignItems: "center", borderRadius: radii.pill, height: 44, justifyContent: "center", width: 44 }, loadingRow: { alignItems: "center", flexDirection: "row", gap: spacing.sm }, list: { gap: spacing.sm }, resultCount: { fontSize: 15, fontWeight: "700" }, resultRow: { alignItems: "center", flexDirection: "row", gap: spacing.sm }, resultIcon: { alignItems: "center", borderRadius: radii.pill, height: 42, justifyContent: "center", width: 42 }, resultCopy: { flex: 1, gap: spacing.xs }, resultHeading: { alignItems: "center", flexDirection: "row", gap: spacing.sm }, resultKind: { fontSize: 13, fontWeight: "800" }, state: { fontSize: 13 }, title: { fontSize: 17, fontWeight: "700" } });
+const styles = StyleSheet.create({ searchBox: { alignItems: "center", borderRadius: radii.input, borderWidth: 2, flexDirection: "row", gap: spacing.sm, paddingHorizontal: spacing.md }, searchIcon: { alignItems: "center", height: 44, justifyContent: "center", width: 44 }, input: { flex: 1, fontSize: 17, minHeight: 56 }, clearButton: { alignItems: "center", borderRadius: radii.pill, height: 44, justifyContent: "center", width: 44 }, list: { gap: spacing.sm }, resultCount: { fontSize: 15, fontWeight: "700" }, resultRow: { alignItems: "center", flexDirection: "row", gap: spacing.sm }, resultIcon: { alignItems: "center", borderRadius: radii.pill, height: 42, justifyContent: "center", width: 42 }, resultCopy: { flex: 1, gap: spacing.xs }, resultHeading: { alignItems: "center", flexDirection: "row", gap: spacing.sm }, resultKind: { fontSize: 13, fontWeight: "800" }, state: { fontSize: 13 }, title: { fontSize: 17, fontWeight: "700" } });

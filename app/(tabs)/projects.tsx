@@ -1,7 +1,7 @@
 import { Screen } from "@/src/shared/ui/Screen";
 import { EmptyState } from "@/src/shared/ui/EmptyState";
 import { PageHero } from "@/src/shared/ui/PageHero";
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useCallback, useState } from "react";
 import { useFocusEffect, router } from "expo-router";
@@ -10,6 +10,7 @@ import { useProjectRepository } from "@/src/features/projects/data/useProjectRep
 import { useAppTheme } from "@/src/shared/theme/useAppTheme";
 import { spacing } from "@/src/shared/theme/tokens";
 import { Card } from "@/src/shared/ui/Card";
+import { LoadingState } from "@/src/shared/ui/LoadingState";
 import { useResponsive } from "@/src/shared/ui/useResponsive";
 import { getProjectFilterCounts, getProjectHighlights, matchesProjectFilter, projectStatusPresentation, type ProjectFilter, type ProjectWithItems } from "@/src/shared/ui/projectPresentation";
 
@@ -37,7 +38,7 @@ export default function ProjectsScreen() {
           </Animated.View>;
         })}
       </ScrollView>
-      {status === "loading" ? <ActivityIndicator color={colors.primary} accessibilityLabel="Cargando proyectos" /> : null}
+      {status === "loading" ? <LoadingState accessibilityLabel="Cargando proyectos" message="Cargando tus proyectos…" skeleton /> : null}
       {status === "error" ? <Pressable onPress={() => void load()}><Text style={{ color: colors.error }}>No se pudieron cargar los proyectos. Intenta otra vez.</Text></Pressable> : null}
       {status === "ready" && projects.length === 0 ? <EmptyState message="Los proyectos nacen cuando aclaras una captura y descubres que requiere más de un paso." actionLabel="Capturar algo" onAction={() => router.push("/capture")} /> : null}
       {status === "ready" ? projects.filter((project) => matchesProjectFilter(project, filter)).map((project) => <Animated.View key={project.id} entering={reducedMotion ? undefined : FadeIn.duration(220).reduceMotion(ReduceMotion.System)} exiting={reducedMotion ? undefined : FadeOut.duration(140).reduceMotion(ReduceMotion.System)} layout={reducedMotion ? undefined : LinearTransition.duration(220).reduceMotion(ReduceMotion.System)}><ProjectCard project={project} colors={colors} onPress={() => router.push(`/project/${project.id}`)} /></Animated.View>) : null}

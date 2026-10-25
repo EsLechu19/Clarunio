@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { ActivityIndicator, Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { router, useFocusEffect } from "expo-router";
 
 import { useItemRepository } from "@/src/features/items/data/useItemRepository";
@@ -12,6 +12,7 @@ import { useAppTheme } from "@/src/shared/theme/useAppTheme";
 import { Card } from "@/src/shared/ui/Card";
 import { ActionButton } from "@/src/shared/ui/ActionButton";
 import { Motion } from "@/src/shared/ui/Motion";
+import { LoadingState } from "@/src/shared/ui/LoadingState";
 
 export default function RecoveryScreen() {
   const colors = useAppTheme(); const review = useReviewRepository(); const itemsRepository = useItemRepository();
@@ -20,7 +21,7 @@ export default function RecoveryScreen() {
   useFocusEffect(useCallback(() => { void load(); }, [load]));
   async function finish() { if (!session || !summary) return; try { for (const id of selected) await itemsRepository.addFocus(id, today); await review.complete(session, summary); router.back(); } catch (cause) { setError(cause instanceof Error ? cause.message : "No se pudo terminar la recuperación."); } }
   async function cancel() { if (!session) return; try { await review.cancel(session); router.back(); } catch (cause) { setError(cause instanceof Error ? cause.message : "No se pudo cancelar la recuperación."); } }
-  if (status === "loading") return <Screen><ActivityIndicator accessibilityLabel="Cargando recuperación" color={colors.primary} /></Screen>;
+  if (status === "loading") return <Screen><LoadingState accessibilityLabel="Cargando recuperación" message="Preparando tu recuperación…" skeleton /></Screen>;
   if (status === "error") return <Screen><Text accessibilityRole="alert" style={{ color: colors.error }}>{error}</Text><Pressable accessibilityRole="button" onPress={() => void load()}><Text style={{ color: colors.primary }}>Reintentar</Text></Pressable></Screen>;
   if (!session || !summary) return null;
   return <Screen><PageHero title="Volver a organizarme" subtitle="Podemos poner tu sistema al día, sin empezar de cero." showBack backFallback="/(tabs)" />

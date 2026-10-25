@@ -173,3 +173,18 @@ Dar vida a la interfaz existente sin inventar negocio: mejorar jerarquía, tarje
 - **Tests puros:** breakpoint, ancho disponible, safe area y posición del FAB se prueban sin inicializar React Native/Vitest.
 - **Matriz de validación manual pendiente:** compacto `<360 dp`, Moto G54, teléfono ancho, fuente al 150%, dark mode, reduced motion y navegación Android por gestos/botones. Este entorno no dispone de esos dispositivos; no se afirma validación visual física.
 - **Limitaciones:** la comprobación automatizada confirma contratos de métricas y compilación, pero no sustituye la revisión visual del APK con teclado, lector de pantalla y fuentes grandes.
+
+## Unidad de trabajo — estados de carga y patrón colapsable — 2026-10-25
+
+- [x] Crear la primitiva reutilizable `LoadingState` con skeleton discreto y mensaje textual.
+- [x] Aplicarla únicamente en Buscar, Proyectos y Recuperación, donde existe carga asíncrona visible.
+- [x] Respetar tema claro/oscuro, escalado de fuente, `useReducedMotion`, roles accesibles y objetivos táctiles existentes.
+- [x] Mantener el acordeón de detalles de respaldos existente en Ajustes sin ampliar su contenido ni modificar contratos.
+- [x] No instalar Foonto/BeUI, dependencias nuevas ni cambiar reglas GTD, repositorios o assets.
+
+### Evidencia
+
+- **Archivos:** `src/shared/ui/LoadingState.tsx`, `app/search.tsx`, `app/(tabs)/projects.tsx`, `app/recovery.tsx`.
+- **Decisión:** el estado usa una superficie temática y un skeleton opcional; la animación de opacidad se omite cuando el sistema solicita movimiento reducido y el texto sigue siendo legible con fuentes grandes.
+- **Tests:** no se agregaron tests de React Native; no existe un contrato puro nuevo que aporte valor sin forzar el entorno de UI.
+- **Riesgos:** queda pendiente validación visual en Android real con lector de pantalla, fuentes grandes, dark mode y movimiento reducido.
