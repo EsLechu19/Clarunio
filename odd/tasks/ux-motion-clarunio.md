@@ -91,6 +91,15 @@ Dar vida a la interfaz existente sin inventar negocio: mejorar jerarquía, tarje
 - 2026-10-24 — Corrección visual estructural de `Ahora`: el saludo pasó al hero antes de «¿Qué sigue?», las acciones disponibles se deduplican contra el foco, las acciones usan filas compactas con iconos accesibles y los módulos de Bandeja/revisión dejaron un único CTA discreto. Se mantienen datos reales, fechas `dueAt`, repositorios, undo, errores, carga, dark mode y reduced motion.
 - 2026-10-24 — Se rediseñó `Bandeja` como flujo de procesamiento GTD: hero orientado a acción, CTA `Capturar ahora`, resumen real, filas compactas de capturas con icono de bandeja, metadata relativa y acción explícita `Aclarar`, además de un estado vacío con CTA `Capturar algo`. Se mantiene navegación, carga, retry, dark mode, accesibilidad y reduced motion; `ItemList` no se eliminó porque no es necesario ampliar el alcance.
 
+## Evidencia del rediseño de Proyectos
+
+- **Decisión:** las tarjetas dejan de presentarse como CRUD estilizado y priorizan resultado deseado, estado semántico, cantidad real de acciones y metadata independiente de siguiente acción, espera y bloqueo. Archivados permanecen dentro de `Todos` porque el repositorio ya los excluye de la consulta normal y no se crea una promesa de filtro que la pantalla no pueda cumplir.
+- **Patrones adaptados:** indicador de filtro con transición de layout, entrada/salida y reflow de tarjetas con Reanimated, iconos Ionicons por estado y affordance de chevron; no se agregaron CSS web, dependencias, progreso ni datos inventados.
+- **Accesibilidad:** cada tarjeta completa abre el detalle existente, conserva la ruta `/project/[id]`, expone tabs con `selected`, conteos reales y respeta `useReducedMotion`.
+- **Empty state:** explica que los proyectos nacen al aclarar una captura y enlaza a `/capture`; el estado de error conserva retry.
+- **Tests:** `tests/project-presentation.test.ts` cubre conteos, filtros y prioridad honesta de metadata sin importar Reanimated.
+- **Riesgos:** falta validación visual en Android pequeño y con lector de pantalla; la lista de proyectos sigue dependiendo del contrato actual del repositorio, sin cambios de SQLite.
+
 ## Evidencia de la mejora del flujo de captura
 
 - **Archivos:** `src/shared/ui/CaptureFab.tsx`, `app/capture.tsx`, `src/shared/ui/Motion.tsx`.
