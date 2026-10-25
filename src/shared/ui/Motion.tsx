@@ -1,7 +1,8 @@
 import type { PropsWithChildren } from "react";
-import Animated, { FadeIn, FadeOut, ReduceMotion, useReducedMotion } from "react-native-reanimated";
+import Animated, { FadeIn, FadeOut, ReduceMotion, SlideInDown, useReducedMotion } from "react-native-reanimated";
 
-export function Motion({ children }: PropsWithChildren) {
+export function Motion({ children, variant = "default" }: PropsWithChildren<{ variant?: "default" | "capture" }>) {
   const reducedMotion = useReducedMotion();
-  return <Animated.View entering={reducedMotion ? undefined : FadeIn.duration(220).reduceMotion(ReduceMotion.System)} exiting={reducedMotion ? undefined : FadeOut.duration(140).reduceMotion(ReduceMotion.System)}>{children}</Animated.View>;
+  const entering = variant === "capture" ? SlideInDown.duration(280) : FadeIn.duration(220);
+  return <Animated.View entering={reducedMotion ? undefined : entering.reduceMotion(ReduceMotion.System)} exiting={reducedMotion ? undefined : FadeOut.duration(140).reduceMotion(ReduceMotion.System)}>{children}</Animated.View>;
 }

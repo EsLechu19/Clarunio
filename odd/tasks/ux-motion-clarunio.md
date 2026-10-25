@@ -91,6 +91,16 @@ Dar vida a la interfaz existente sin inventar negocio: mejorar jerarquía, tarje
 - 2026-10-24 — Corrección visual estructural de `Ahora`: el saludo pasó al hero antes de «¿Qué sigue?», las acciones disponibles se deduplican contra el foco, las acciones usan filas compactas con iconos accesibles y los módulos de Bandeja/revisión dejaron un único CTA discreto. Se mantienen datos reales, fechas `dueAt`, repositorios, undo, errores, carga, dark mode y reduced motion.
 - 2026-10-24 — Se rediseñó `Bandeja` como flujo de procesamiento GTD: hero orientado a acción, CTA `Capturar ahora`, resumen real, filas compactas de capturas con icono de bandeja, metadata relativa y acción explícita `Aclarar`, además de un estado vacío con CTA `Capturar algo`. Se mantiene navegación, carga, retry, dark mode, accesibilidad y reduced motion; `ItemList` no se eliminó porque no es necesario ampliar el alcance.
 
+## Evidencia de la mejora del flujo de captura
+
+- **Archivos:** `src/shared/ui/CaptureFab.tsx`, `app/capture.tsx`, `src/shared/ui/Motion.tsx`.
+- **Patrones adaptados:** `SlideInDown` para revelar la captura, `LinearTransition` para que el composer gane presencia al crecer el texto, estados `idle → saving → success` con iconos/indicador, y shake breve solo ante validación inválida. Son primitivas nativas de Reanimated; no se copiaron componentes ni CSS web de transitions.dev.
+- **Contrato conservado:** el FAB sigue abriendo `/capture`, la captura persiste directamente en `INBOX`, se conserva el texto ante error, el CTA permanece asociado al campo, y la vuelta usa la ruta previa después de confirmar la persistencia.
+- **Accesibilidad:** se eliminó la dependencia de `autoFocus`, se permite desplazar el contenido con teclado visible, se mantienen objetivos táctiles y etiquetas accesibles, y las animaciones se omiten con `useReducedMotion`.
+- **Riesgos:** queda pendiente la validación visual en Android real con teclado y movimiento reducido; el retraso de éxito es únicamente el feedback breve posterior a una escritura ya confirmada.
+- **Verificación:** `npm run typecheck` — 0 errores; `npm run lint` — 0 errores; `npm test -- --run` — 14 archivos, 39 pruebas aprobadas.
+- **Commit:** `feat(ui): mejora flujo de captura` (hash registrado en Git al cerrar esta unidad).
+
 ## Evidencia del rediseño de Bandeja
 
 - **Archivos:** `app/(tabs)/inbox.tsx`, `src/shared/ui/InboxItemRow.tsx`, `src/shared/ui/inboxPresentation.ts`, `src/shared/ui/EmptyState.tsx`, `tests/inbox-presentation.test.ts`.
