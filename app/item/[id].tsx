@@ -1,13 +1,14 @@
 import { useCallback, useState } from "react";
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, TextInput } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
+import { useFocusEffect, useLocalSearchParams } from "expo-router";
 
 import { useItemRepository } from "@/src/features/items/data/useItemRepository";
 import type { Item } from "@/src/features/items/domain/item";
 import { useAppTheme } from "@/src/shared/theme/useAppTheme";
 import { spacing } from "@/src/shared/theme/tokens";
 import { ActionButton } from "@/src/shared/ui/ActionButton";
+import { BackButton } from "@/src/shared/ui/BackButton";
 
 export default function ItemDetailScreen() {
   const colors = useAppTheme();
@@ -23,7 +24,7 @@ export default function ItemDetailScreen() {
   const currentItem = item;
   async function schedule() { try { await repository.scheduleNextAction(currentItem.id, availableFrom); await load(); } catch (cause) { setError(cause instanceof Error ? cause.message : "No se pudo programar la acción."); } }
   async function saveDue() { try { const updated = dueAt.trim() ? await repository.setDueAt(currentItem.id, dueAt) : await repository.clearDueAt(currentItem.id); setItem(updated); setError(null); } catch (cause) { setError(cause instanceof Error ? cause.message : "No se pudo guardar el vencimiento."); } }
-  return <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}><ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled"><Pressable accessibilityRole="button" accessibilityLabel="Volver a Ahora" onPress={() => router.back()}><Text style={{ color: colors.primary }}>‹ Ahora</Text></Pressable><Text style={[styles.title, { color: colors.text }]}>{item.title}</Text><Text style={{ color: colors.textSecondary }}>Estado: {item.state}</Text>{error ? <Text accessibilityRole="alert" style={{ color: colors.error }}>{error}</Text> : null}<Text style={{ color: colors.text }}>Disponible desde</Text><TextInput accessibilityLabel="Fecha de disponibilidad" placeholder="AAAA-MM-DD" placeholderTextColor={colors.textSecondary} value={availableFrom} onChangeText={setAvailableFrom} style={[styles.input, { color: colors.text, borderColor: colors.outline, backgroundColor: colors.surface }]} /><Button label="Programar" colors={colors} onPress={() => void schedule()} disabled={item.state !== "NEXT"} /><Text style={{ color: colors.text }}>Vencimiento (opcional)</Text><TextInput accessibilityLabel="Fecha de vencimiento" placeholder="AAAA-MM-DD o fecha ISO" placeholderTextColor={colors.textSecondary} value={dueAt} onChangeText={setDueAt} style={[styles.input, { color: colors.text, borderColor: colors.outline, backgroundColor: colors.surface }]} /><Button label="Guardar vencimiento" colors={colors} onPress={() => void saveDue()} /><Pressable accessibilityRole="button" onPress={() => { setDueAt(""); void saveDue(); }}><Text style={{ color: colors.primary }}>Quitar vencimiento</Text></Pressable></ScrollView></SafeAreaView>;
+  return <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}><ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled"><BackButton fallback="/(tabs)/index" label="Volver a Ahora" showLabel /><Text style={[styles.title, { color: colors.text }]}>{item.title}</Text><Text style={{ color: colors.textSecondary }}>Estado: {item.state}</Text>{error ? <Text accessibilityRole="alert" style={{ color: colors.error }}>{error}</Text> : null}<Text style={{ color: colors.text }}>Disponible desde</Text><TextInput accessibilityLabel="Fecha de disponibilidad" placeholder="AAAA-MM-DD" placeholderTextColor={colors.textSecondary} value={availableFrom} onChangeText={setAvailableFrom} style={[styles.input, { color: colors.text, borderColor: colors.outline, backgroundColor: colors.surface }]} /><Button label="Programar" colors={colors} onPress={() => void schedule()} disabled={item.state !== "NEXT"} /><Text style={{ color: colors.text }}>Vencimiento (opcional)</Text><TextInput accessibilityLabel="Fecha de vencimiento" placeholder="AAAA-MM-DD o fecha ISO" placeholderTextColor={colors.textSecondary} value={dueAt} onChangeText={setDueAt} style={[styles.input, { color: colors.text, borderColor: colors.outline, backgroundColor: colors.surface }]} /><Button label="Guardar vencimiento" colors={colors} onPress={() => void saveDue()} /><Pressable accessibilityRole="button" onPress={() => { setDueAt(""); void saveDue(); }}><Text style={{ color: colors.primary }}>Quitar vencimiento</Text></Pressable></ScrollView></SafeAreaView>;
 }
 
 function Button({ label, onPress, disabled = false }: { label: string; colors: ReturnType<typeof useAppTheme>; onPress: () => void; disabled?: boolean }) { return <ActionButton disabled={disabled} onPress={onPress}>{label}</ActionButton>; }

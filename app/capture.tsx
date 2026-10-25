@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { useEffect, useRef, useState } from "react";
+import { ActivityIndicator, Alert, BackHandler, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
@@ -9,6 +9,8 @@ import { useItemRepository } from "@/src/features/items/data/useItemRepository";
 import { radii, spacing } from "@/src/shared/theme/tokens";
 import { useAppTheme } from "@/src/shared/theme/useAppTheme";
 import { Motion } from "@/src/shared/ui/Motion";
+import { BackButton, navigateBack } from "@/src/shared/ui/BackButton";
+import { captureExitDecision } from "@/src/shared/ui/captureExitPolicy";
 
 const SAVE_ERROR = "No se pudo guardar. Intenta otra vez; mantendremos tu texto en pantalla.";
 type CaptureStatus = "idle" | "saving" | "success";
@@ -21,8 +23,32 @@ export default function CaptureScreen() {
   const [status, setStatus] = useState<CaptureStatus>("idle");
   const [error, setError] = useState<string | null>(null);
   const [inputHeight, setInputHeight] = useState(156);
+  const exitPromptOpen = useRef(false);
   const shake = useSharedValue(0);
   const shakeStyle = useAnimatedStyle(() => ({ transform: [{ translateX: shake.value }] }));
+
+  function exitCapture() {
+    const decision = captureExitDecision(text, status);
+    if (decision === "blocked") return;
+    if (decision === "allow") {
+      navigateBack("/(tabs)/index");
+      return;
+    }
+    if (exitPromptOpen.current) return;
+    exitPromptOpen.current = true;
+    Alert.alert("Descartar captura", "Hay texto sin guardar. ¿Querés salir sin guardarlo?", [
+      { text: "Seguir editando", style: "cancel", onPress: () => { exitPromptOpen.current = false; } },
+      { text: "Descartar captura", style: "destructive", onPress: () => { exitPromptOpen.current = false; navigateBack("/(tabs)/index"); } },
+    ]);
+  }
+
+  useEffect(() => {
+    const subscription = BackHandler.addEventListener("hardwareBackPress", () => {
+      exitCapture();
+      return true;
+    });
+    return () => subscription.remove();
+  }, [status, text]);
 
   useEffect(() => {
     if (status !== "success") return undefined;
@@ -56,7 +82,7 @@ export default function CaptureScreen() {
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.container}>
         <Motion variant="capture"><ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
-        <Pressable accessibilityLabel="Cerrar captura" accessibilityRole="button" onPress={() => router.back()} style={styles.close}><Ionicons color={colors.textSecondary} name="close" size={26} /></Pressable>
+        <BackButton fallback="/(tabs)/index" label="Cerrar captura" variant="close" onPress={exitCapture} />
         <Text style={[styles.title, { color: colors.text }]}>¿Qué tienes en mente?</Text>
         <Text style={{ color: colors.textSecondary }}>Anotá primero. Las decisiones vienen después.</Text>
         <Animated.View layout={reducedMotion ? undefined : LinearTransition.duration(220).reduceMotion(ReduceMotion.System)} style={[styles.composer, { backgroundColor: colors.surface, borderColor: error ? colors.error : colors.outline }, shakeStyle]}>

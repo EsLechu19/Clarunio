@@ -146,3 +146,11 @@ Dar vida a la interfaz existente sin inventar negocio: mejorar jerarquía, tarje
 - **Seguridad de datos:** exportar se presenta como acción segura; importar y reemplazar conserva la vista previa, confirmación destructiva y operación transaccional existentes. Exportar/importar bloquean doble toque mientras están ocupados.
 - **Evidencia:** `npm run typecheck` — 0 errores; `npm run lint` — 0 errores; `npm test -- --run` — 15 archivos, 42 pruebas aprobadas.
 - **Riesgos:** falta validación visual en APK Android real, especialmente para el aviso de Expo Go, lector de pantalla y tamaños de fuente grandes; el banner usa un timeout breve con limpieza al desmontar.
+
+## Evidencia de navegación segura y salida de captura — 2026-10-24
+
+- **Decisión:** se agregó `BackButton` como salida visual reutilizable; conserva el botón físico y usa `router.back()` cuando existe historial, con `router.replace(fallback)` como ruta explícita de respaldo.
+- **Rutas fallback:** Buscar/Ajustes → `/(tabs)`; detalle de proyecto → `/(tabs)/projects`; detalle de acción → `/(tabs)/index`; aclaración → `/(tabs)/inbox`; Captura → `/(tabs)/index`.
+- **Captura:** la salida visual y Android hardware comparten la misma política; texto vacío sale sin confirmar, texto no guardado ofrece `Seguir editando`/`Descartar captura`, y los estados `saving`/`success` bloquean la salida manual. El listener se limpia y el prompt evita doble navegación.
+- **Evidencia:** `tests/capture-exit-policy.test.ts` cubre texto vacío, texto pendiente y bloqueo durante guardado/éxito. `npm run typecheck` — 0 errores; `npm run lint` — 0 errores; `npm test -- --run` — 17 archivos, 55 pruebas aprobadas.
+- **Riesgos:** falta validación visual en APK Android real con lector de pantalla y diálogos del sistema; la confirmación usa `Alert` nativo sin modificar dependencias ni reglas de dominio.

@@ -54,7 +54,7 @@ export default function SearchScreen() {
   function clearSearch() { setQuery(""); }
 
   return <Screen>
-    <PageHero title="Buscar" subtitle="Encuentra acciones, notas y proyectos guardados en este dispositivo." />
+    <PageHero title="Buscar" subtitle="Encuentra acciones, notas y proyectos guardados en este dispositivo." showBack backFallback="/(tabs)" />
     <View style={[styles.searchBox, { backgroundColor: colors.surface, borderColor: colors.primary }]}>
       <Animated.View key={query ? "clear-icon" : "search-icon"} entering={reducedMotion ? undefined : FadeIn.duration(160).reduceMotion(ReduceMotion.System)} exiting={reducedMotion ? undefined : FadeOut.duration(120).reduceMotion(ReduceMotion.System)}>
         {query ? <Pressable accessibilityLabel="Limpiar búsqueda" accessibilityRole="button" onPress={clearSearch} style={({ pressed }) => [styles.clearButton, pressed && { backgroundColor: colors.primarySoft }]}><Ionicons color={colors.primary} name="close" size={22} /></Pressable> : <View style={styles.searchIcon}><Ionicons color={colors.primary} name="search-outline" size={22} /></View>}

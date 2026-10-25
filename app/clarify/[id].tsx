@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { ActivityIndicator, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 
 import { useItemRepository } from "@/src/features/items/data/useItemRepository";
@@ -11,6 +10,7 @@ import { useAppTheme } from "@/src/shared/theme/useAppTheme";
 import { ActionButton } from "@/src/shared/ui/ActionButton";
 import { ChoiceCard } from "@/src/shared/ui/ChoiceCard";
 import { Motion } from "@/src/shared/ui/Motion";
+import { BackButton } from "@/src/shared/ui/BackButton";
 
 type Step = "question" | "destination" | "next" | "project" | "waiting";
 type Status = "loading" | "ready" | "saving" | "success" | "error";
@@ -88,7 +88,7 @@ export default function ClarifyScreen() {
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
        <Motion><View style={styles.content}>
-         <View style={styles.top}><Pressable accessibilityLabel="Cerrar aclaración" accessibilityRole="button" onPress={() => router.back()}><Ionicons color={colors.textSecondary} name="close" size={26} /></Pressable></View>
+          <View style={styles.top}><BackButton fallback="/(tabs)/inbox" label="Cancelar aclaración" variant="close" showLabel /></View>
          <Text style={[styles.kicker, { color: colors.textSecondary }]}>Aclarar entrada</Text>
          <Text style={{ color: colors.textSecondary }}>Paso {step === "question" ? 1 : step === "destination" ? 2 : 3} de 3</Text>
          <Text style={[styles.title, { color: colors.text }]}>{step === "next" || step === "project" ? "¿Cuál es el siguiente paso concreto?" : step === "waiting" ? "¿Qué respuesta o resultado estás esperando?" : step === "destination" ? "¿Dónde quieres guardarlo?" : "¿Esto requiere alguna acción?"}</Text>
