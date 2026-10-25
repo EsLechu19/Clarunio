@@ -129,3 +129,12 @@ Dar vida a la interfaz existente sin inventar negocio: mejorar jerarquía, tarje
 - `npm run lint` — 0 errores.
 - `npm test -- --run` — 12 archivos, 36 pruebas aprobadas.
 - El contrato GTD y el almacenamiento de settings no fueron modificados; no se tocaron `app.json`, `eas.json`, `package.json`, Android, SQLite ni rutas.
+
+## Evidencia del rediseño de Ajustes — 2026-10-24
+
+- **Decisiones:** se mantuvieron intactos los contratos de preferencias, la política de Expo Go Android, la validación de respaldos y la transacción de reemplazo. La pantalla ahora agrupa Apariencia y Datos con superficies claras, iconos, subtítulos accionables y advertencias explícitas.
+- **Patrones adaptados:** feedback temporal success/warning/error con `FeedbackBanner`, FadeIn/FadeOut y `useReducedMotion`; feedback sutil de toggle con Reanimated; revelación de detalles de respaldo mediante acordeón; icon swap contextual para estado de feedback y acciones de datos. No se añadieron dependencias, CSS web ni motion decorativo.
+- **Accesibilidad:** selector de tema con radio y `selected`, switches con `checked`/`disabled`, roles de alerta/botón, etiquetas descriptivas y objetivos táctiles de al menos 48 dp en acciones principales.
+- **Seguridad de datos:** exportar se presenta como acción segura; importar y reemplazar conserva la vista previa, confirmación destructiva y operación transaccional existentes. Exportar/importar bloquean doble toque mientras están ocupados.
+- **Evidencia:** `npm run typecheck` — 0 errores; `npm run lint` — 0 errores; `npm test -- --run` — 15 archivos, 42 pruebas aprobadas.
+- **Riesgos:** falta validación visual en APK Android real, especialmente para el aviso de Expo Go, lector de pantalla y tamaños de fuente grandes; el banner usa un timeout breve con limpieza al desmontar.
