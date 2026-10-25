@@ -50,7 +50,7 @@ export default function ReviewScreen() {
   const stepIndex = REVIEW_STEPS.indexOf(session.currentStep);
   const isClosure = session.currentStep === "CLOSURE";
   return <Screen>
-    <PageHero title="Revisión semanal" subtitle="Comprobemos que tus pendientes siguen claros y actualizados." />
+       <PageHero title="Revisión semanal" subtitle="Comprobemos que tus pendientes siguen claros y actualizados." showBack backFallback="/(tabs)" />
     <Text style={{ color: colors.textSecondary }}>Etapa {stepIndex + 1} de {REVIEW_STEPS.length}: {LABELS[session.currentStep]}</Text>
      <View accessibilityLabel={`Progreso de revisión: etapa ${stepIndex + 1} de ${REVIEW_STEPS.length}`} accessibilityRole="progressbar" accessibilityValue={{ min: 1, max: REVIEW_STEPS.length, now: stepIndex + 1 }} style={[styles.progress, { backgroundColor: colors.outline }]}><View style={[styles.progressFill, { backgroundColor: colors.primary, width: `${((stepIndex + 1) / REVIEW_STEPS.length) * 100}%` }]} /></View>
     {error ? <Text accessibilityRole="alert" style={{ color: colors.error }}>{error}</Text> : null}

@@ -23,7 +23,7 @@ export default function RecoveryScreen() {
   if (status === "loading") return <Screen><ActivityIndicator accessibilityLabel="Cargando recuperación" color={colors.primary} /></Screen>;
   if (status === "error") return <Screen><Text accessibilityRole="alert" style={{ color: colors.error }}>{error}</Text><Pressable accessibilityRole="button" onPress={() => void load()}><Text style={{ color: colors.primary }}>Reintentar</Text></Pressable></Screen>;
   if (!session || !summary) return null;
-  return <Screen><PageHero title="Volver a organizarme" subtitle="Podemos poner tu sistema al día, sin empezar de cero." />
+  return <Screen><PageHero title="Volver a organizarme" subtitle="Podemos poner tu sistema al día, sin empezar de cero." showBack backFallback="/(tabs)" />
      <Card><Text style={{ color: colors.text }}>Capturas: {summary.inbox}</Text><Text style={{ color: colors.text }}>Acciones activas: {summary.next}</Text><Text style={{ color: colors.text }}>Proyectos sin siguiente: {summary.projectsWithoutNext}</Text><Text style={{ color: colors.text }}>Esperando: {summary.waiting}</Text></Card>
     <Text style={[styles.heading, { color: colors.text }]}>Una decisión por vez</Text>
      {inbox.length ? inbox.map((item) => <Motion key={item.id}><Card><Text style={{ color: colors.text }}>{item.title}</Text><View style={styles.actions}><ActionButton icon="bulb-outline" onPress={() => router.push(`/clarify/${item.id}`)}>Abrir para aclarar</ActionButton><ActionButton icon="arrow-forward" variant="secondary" onPress={() => setInbox((current) => current.filter((candidate) => candidate.id !== item.id))}>Omitir</ActionButton></View></Card></Motion>) : <Text style={{ color: colors.textSecondary }}>No hay capturas para procesar ahora.</Text>}
