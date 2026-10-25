@@ -154,3 +154,12 @@ Dar vida a la interfaz existente sin inventar negocio: mejorar jerarquía, tarje
 - **Captura:** la salida visual y Android hardware comparten la misma política; texto vacío sale sin confirmar, texto no guardado ofrece `Seguir editando`/`Descartar captura`, y los estados `saving`/`success` bloquean la salida manual. El listener se limpia y el prompt evita doble navegación.
 - **Evidencia:** `tests/capture-exit-policy.test.ts` cubre texto vacío, texto pendiente y bloqueo durante guardado/éxito. `npm run typecheck` — 0 errores; `npm run lint` — 0 errores; `npm test -- --run` — 17 archivos, 55 pruebas aprobadas.
 - **Riesgos:** falta validación visual en APK Android real con lector de pantalla y diálogos del sistema; la confirmación usa `Alert` nativo sin modificar dependencias ni reglas de dominio.
+
+## Splash nativo de Clarunio — 2026-10-25
+
+- **Asset autorizado:** `img/Imagen de ChatGPT 24 oct 2026, 17_46_18-1.png`, isotipo cuadrado centrado; no se usa el wordmark ni la imagen de referencia completa.
+- **Configuración:** el plugin oficial `expo-splash-screen` usa `resizeMode: contain`, fondo light `#F8F6FF` y fondo dark `#151021`. Se conservaron `expo-router`, `expo-sqlite`, `expo-sharing` y `expo-notifications` sin duplicarlos.
+- **Motivo:** reemplazar la grilla/círculos grises del placeholder de Expo por una pantalla de arranque estática, rápida y legible, alineada con los tokens de tema existentes.
+- **Alcance:** no se edita `android/**`; el próximo `prebuild` o EAS debe regenerar los recursos nativos desde `app.json`. `transitions.dev` no controla el splash nativo previo a React; cualquier reveal posterior queda fuera de esta unidad.
+- **Evidencia:** `npx expo config --type public` resolvió el asset, `npm run typecheck` y `npm run lint` terminaron sin errores, y `npm test -- --run` pasó con 17 archivos y 55 pruebas.
+- **APK requerido:** hace falta generar un nuevo APK/development build para comprobar visualmente el splash nativo en Android; Expo Go no regenera ni representa este recurso nativo como evidencia final.

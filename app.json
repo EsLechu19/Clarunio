@@ -13,7 +13,18 @@
       "expo-router",
       "expo-sqlite",
       "expo-sharing",
-      "expo-notifications"
+      "expo-notifications",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./img/Imagen de ChatGPT 24 oct 2026, 17_46_18-1.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#F8F6FF",
+          "dark": {
+            "backgroundColor": "#151021"
+          }
+        }
+      ]
     ],
     "extra": {
       "router": {},
