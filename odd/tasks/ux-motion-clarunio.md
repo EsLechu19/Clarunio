@@ -90,6 +90,14 @@ Dar vida a la interfaz existente sin inventar negocio: mejorar jerarquía, tarje
 - 2026-10-24 — Bug corregido: Expo Go Android fallaba al abrir Clarunio con `Cannot find native module 'ExpoTopicSubscriptionModule'` porque `notificationService.ts` importaba estáticamente `expo-notifications`. La solución detecta Expo Go con `expo-constants`, carga `expo-notifications` de forma dinámica solo cuando corresponde y captura fallos nativos; Ajustes informa que los recordatorios requieren un development build o APK compatible. Se agregaron pruebas unitarias de la política pura, sin inicializar módulos nativos.
 - 2026-10-24 — Corrección visual estructural de `Ahora`: el saludo pasó al hero antes de «¿Qué sigue?», las acciones disponibles se deduplican contra el foco, las acciones usan filas compactas con iconos accesibles y los módulos de Bandeja/revisión dejaron un único CTA discreto. Se mantienen datos reales, fechas `dueAt`, repositorios, undo, errores, carga, dark mode y reduced motion.
 - 2026-10-24 — Se rediseñó `Bandeja` como flujo de procesamiento GTD: hero orientado a acción, CTA `Capturar ahora`, resumen real, filas compactas de capturas con icono de bandeja, metadata relativa y acción explícita `Aclarar`, además de un estado vacío con CTA `Capturar algo`. Se mantiene navegación, carga, retry, dark mode, accesibilidad y reduced motion; `ItemList` no se eliminó porque no es necesario ampliar el alcance.
+- 2026-10-24 — Mejora autorizada de `Buscar`: se adaptaron input clear/dissolve, icon swap, estados humanos, entrada discreta escalonada y reflow con Reanimated, respetando `useReducedMotion`; se añadió debounce de 250 ms, cleanup y protección contra respuestas obsoletas. La pantalla mantiene autofocus fuera para no abrir el teclado y destruir la composición al entrar; la búsqueda inicia tras una acción explícita del usuario.
+
+## Evidencia de la mejora de Buscar
+
+- **Archivos:** `app/search.tsx`, `src/features/search/data/searchRepository.ts`, `src/features/search/searchPresentation.ts`, `tests/search-presentation.test.ts`.
+- **Decisión:** el repositorio devuelve `updated_at` junto a cada resultado y la presentación combina/ordena de forma estable sin alterar `searchPattern`, SQL parametrizado ni contratos de SQLite.
+- **Patrones adaptados:** icono búsqueda/cierre, estados de texto, feedback `Buscando…`, skeleton no añadido para evitar sobrecargar una consulta local breve, entrada FadeIn escalonada y `LinearTransition` para reflow; no se usaron CSS web ni dependencias nuevas.
+- **Riesgos:** falta validación visual en Android real con teclado, lector de pantalla y fuentes grandes; el orden depende de timestamps ISO válidos existentes.
 
 ## Evidencia del rediseño de Proyectos
 
