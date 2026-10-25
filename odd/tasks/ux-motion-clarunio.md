@@ -217,3 +217,19 @@ Dar vida a la interfaz existente sin inventar negocio: mejorar jerarquía, tarje
 - **Decisión:** la acción `NEXT` conserva el título actual usando `transitionWaiting(id, "NEXT")`; no se agregan campos, reglas GTD ni flujos de revisión.
 - **Verificación:** `npm run typecheck` — 0 errores; `npm run lint` — 0 errores; `npm test -- --run` — 18 archivos, 58 pruebas aprobadas.
 - **Riesgos:** falta validación visual en Android real con lector de pantalla, fuentes grandes, dark mode y movimiento reducido.
+
+## Unidad P0 — revisión accionable — 2026-10-25
+
+- [x] Convertir cada elemento de Revisión en un control accesible con target táctil mínimo de 48 dp.
+- [x] Resolver rutas sin duplicarlas: INBOX → `/clarify/[id]`, acciones → `/item/[id]` y proyectos sin siguiente acción → `/project/[id]`.
+- [x] Mantener la sesión, sus etapas, pausa, cancelación, cierre y recarga al volver mediante el patrón de foco existente.
+- [x] Respetar tema, reduced motion y estados GTD existentes sin tocar persistencia ni dominio.
+- [x] Cubrir la resolución pura de rutas con tests unitarios, sin forzar tests de React Native.
+
+### Evidencia
+
+- **Archivos:** `app/review.tsx`, `src/features/review/reviewNavigation.ts`, `tests/review-navigation.test.ts`.
+- **Decisión:** se usa `router.navigate` para evitar duplicar rutas y `useFocusEffect` ya existente para recargar la etapa al volver.
+- **Accesibilidad:** cada fila expone rol de botón, label, hint y target táctil; la lista conserva el tema activo y `Motion` mantiene reduced motion.
+- **Verificación:** `npm run typecheck` — 0 errores; `npm run lint` — 0 errores; `npm test -- --run` — 19 archivos, 61 pruebas aprobadas.
+- **Riesgos:** queda pendiente validación visual en Android real con lector de pantalla, fuentes grandes, dark mode y movimiento reducido.

@@ -11,6 +11,7 @@ import { useAppTheme } from "@/src/shared/theme/useAppTheme";
 import { Card } from "@/src/shared/ui/Card";
 import { ActionButton } from "@/src/shared/ui/ActionButton";
 import { Motion } from "@/src/shared/ui/Motion";
+import { getReviewItemRoute } from "@/src/features/review/reviewNavigation";
 
 const LABELS: Record<ReviewStep, string> = { INBOX: "Bandeja", NEXT: "Siguientes", WAITING: "Esperando", PROJECTS: "Proyectos", SCHEDULED_SOMEDAY: "Programadas y algún día", CLOSURE: "Cierre" };
 
@@ -56,7 +57,7 @@ export default function ReviewScreen() {
     {error ? <Text accessibilityRole="alert" style={{ color: colors.error }}>{error}</Text> : null}
      <Motion><Card>
       <Text style={[styles.heading, { color: colors.text }]}>{LABELS[session.currentStep]}</Text>
-      {isClosure ? <Text style={{ color: colors.textSecondary }}>Resumen real: {summary.inbox} en bandeja, {summary.next} siguientes, {summary.waiting} esperando, {summary.projectsWithoutNext} proyectos sin siguiente acción y {summary.scheduledSomeday} programadas o algún día.</Text> : items.length ? items.map((item) => <Text key={item.id} style={{ color: colors.text }}>• {item.title}</Text>) : <Text style={{ color: colors.textSecondary }}>No hay elementos pendientes en esta etapa.</Text>}
+      {isClosure ? <Text style={{ color: colors.textSecondary }}>Resumen real: {summary.inbox} en bandeja, {summary.next} siguientes, {summary.waiting} esperando, {summary.projectsWithoutNext} proyectos sin siguiente acción y {summary.scheduledSomeday} programadas o algún día.</Text> : items.length ? <View accessibilityRole="list" accessibilityLabel={`Elementos de ${LABELS[session.currentStep]}`} style={styles.items}>{items.map((item) => <Motion key={item.id}><Pressable accessibilityRole="button" accessibilityLabel={`${item.title}. ${LABELS[session.currentStep]}`} accessibilityHint="Abre el elemento para revisarlo" onPress={() => router.navigate(getReviewItemRoute(session.currentStep, item.id))} style={({ pressed }) => [styles.item, { borderColor: colors.outline, backgroundColor: colors.surface }, pressed && { backgroundColor: colors.primarySoft }]}><Text style={{ color: colors.text }}>{item.title}</Text></Pressable></Motion>)}</View> : <Text style={{ color: colors.textSecondary }}>No hay elementos pendientes en esta etapa.</Text>}
      </Card></Motion>
      <View style={styles.actions}>
        {isClosure ? <ActionButton icon="checkmark-circle-outline" onPress={() => void finish()}>Terminar revisión</ActionButton> : <ActionButton icon="arrow-forward" onPress={() => void next()}>Siguiente etapa</ActionButton>}
@@ -68,4 +69,4 @@ export default function ReviewScreen() {
 }
 
 function localDate(): string { const date = new Date(); return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`; }
-const styles = StyleSheet.create({ card: { borderRadius: radii.card, borderWidth: 1, gap: spacing.sm, padding: spacing.md }, heading: { fontSize: 20, fontWeight: "800" }, progress: { height: 8, borderRadius: radii.pill, backgroundColor: "#E7E0F2", overflow: "hidden" }, progressFill: { height: "100%" }, actions: { flexDirection: "row", flexWrap: "wrap", gap: spacing.lg } });
+const styles = StyleSheet.create({ card: { borderRadius: radii.card, borderWidth: 1, gap: spacing.sm, padding: spacing.md }, heading: { fontSize: 20, fontWeight: "800" }, progress: { height: 8, borderRadius: radii.pill, backgroundColor: "#E7E0F2", overflow: "hidden" }, progressFill: { height: "100%" }, items: { gap: spacing.sm }, item: { borderRadius: radii.card, borderWidth: 1, justifyContent: "center", minHeight: 48, paddingHorizontal: spacing.md, paddingVertical: spacing.sm }, actions: { flexDirection: "row", flexWrap: "wrap", gap: spacing.lg } });
