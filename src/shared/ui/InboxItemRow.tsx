@@ -12,24 +12,19 @@ export function InboxItemRow({ item, now = new Date() }: { item: Item; now?: Dat
   const clarify = () => router.push(`/clarify/${item.id}`);
 
   return (
-    <Pressable
-      accessibilityLabel={`Abrir captura ${item.title}`}
-      accessibilityRole="button"
-      onPress={clarify}
-      style={({ pressed }) => [styles.row, { backgroundColor: colors.surface, borderColor: colors.outline, opacity: pressed ? 0.82 : 1 }]}
-    >
+    <View style={[styles.row, { backgroundColor: colors.surface, borderColor: colors.outline }]}>
       <View style={[styles.iconContainer, { backgroundColor: colors.primarySoft }]}>
         <Ionicons accessibilityLabel="Captura en bandeja" color={colors.primary} name="file-tray-outline" size={22} />
       </View>
-      <View style={styles.copy}>
+      <Pressable accessibilityLabel={`Abrir captura ${item.title}`} accessibilityRole="button" onPress={clarify} style={({ pressed }) => [styles.copy, { opacity: pressed ? 0.72 : 1 }]}>
         <Text style={[styles.title, { color: colors.text }]} numberOfLines={2}>{item.title}</Text>
         <Text style={[styles.metadata, { color: colors.textSecondary }]}>Captura · {formatRelativeCaptureDate(item.createdAt, now)}</Text>
-      </View>
+      </Pressable>
       <Pressable accessibilityLabel={`Aclarar ${item.title}`} accessibilityRole="button" hitSlop={8} onPress={clarify} style={({ pressed }) => [styles.action, { opacity: pressed ? 0.65 : 1 }]}>
         <Text style={[styles.actionLabel, { color: colors.primary }]}>Aclarar</Text>
         <Ionicons color={colors.primary} name="chevron-forward" size={18} />
       </Pressable>
-    </Pressable>
+    </View>
   );
 }
 
