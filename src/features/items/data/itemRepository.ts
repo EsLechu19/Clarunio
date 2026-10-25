@@ -19,6 +19,7 @@ type ItemRow = {
 export interface ItemRepository {
   createInboxItem(title: string): Promise<Item>;
   listInboxItems(): Promise<Item[]>;
+  listWaitingItems(): Promise<Item[]>;
   getItemById(id: string): Promise<Item | null>;
   clarifyInboxItem(id: string, decision: InboxDecision): Promise<Item>;
   transitionWaiting(id: string, destination: "NEXT" | "DONE", title?: string): Promise<Item>;
@@ -94,6 +95,17 @@ export class SQLiteItemRepository implements ItemRepository {
        WHERE state = ?
        ORDER BY created_at DESC`,
       "INBOX"
+    );
+    return rows.map(mapItem);
+  }
+
+  async listWaitingItems(): Promise<Item[]> {
+    const rows = await this.database.getAllAsync<ItemRow>(
+      `SELECT id, title, state, project_id, waiting_for, available_from, due_at, follow_up_at, created_at, updated_at
+       FROM items
+       WHERE state = ?
+       ORDER BY sort_order, created_at, id`,
+      "WAITING"
     );
     return rows.map(mapItem);
   }

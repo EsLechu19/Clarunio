@@ -202,3 +202,18 @@ Dar vida a la interfaz existente sin inventar negocio: mejorar jerarquía, tarje
 - **Archivos:** `app/settings.tsx`, `odd/tasks/ux-motion-clarunio.md`.
 - **Decisión:** se reutiliza `DataAction` con el copy «Gestionar mis datos» y una descripción que explica el alcance de `/data`; la navegación usa `router.navigate` en línea con los accesos globales existentes.
 - **Riesgos:** queda pendiente validación visual en Android real con lector de pantalla, fuentes grandes, dark mode y movimiento reducido.
+
+## Unidad P0 — lista operativa Esperando — 2026-10-25
+
+- [x] Agregar `listWaitingItems()` al repositorio, con mapeo al dominio existente y orden estable por `sort_order`, `created_at` e `id`.
+- [x] Crear `/waiting` con carga, error, vacío, `waitingFor`, acción pendiente y transiciones existentes a `NEXT` o `DONE`.
+- [x] Bloquear doble pulsación durante la transición, mostrar feedback y conservar tema, safe areas, responsive, accesibilidad y reduced motion.
+- [x] Agregar acceso visible desde Ahora mediante `router.navigate` sin duplicar rutas.
+- [x] Cubrir la consulta con un test de repositorio sin forzar tests de React Native.
+
+### Evidencia
+
+- **Archivos:** `src/features/items/data/itemRepository.ts`, `app/waiting.tsx`, `app/(tabs)/index.tsx`, `tests/m3-projects.test.ts`.
+- **Decisión:** la acción `NEXT` conserva el título actual usando `transitionWaiting(id, "NEXT")`; no se agregan campos, reglas GTD ni flujos de revisión.
+- **Verificación:** `npm run typecheck` — 0 errores; `npm run lint` — 0 errores; `npm test -- --run` — 18 archivos, 58 pruebas aprobadas.
+- **Riesgos:** falta validación visual en Android real con lector de pantalla, fuentes grandes, dark mode y movimiento reducido.
