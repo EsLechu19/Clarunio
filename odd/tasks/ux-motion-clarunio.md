@@ -89,6 +89,14 @@ Dar vida a la interfaz existente sin inventar negocio: mejorar jerarquía, tarje
 - 2026-10-24 — Se reemplazó el wordmark horizontal comprimido del encabezado por el isotipo cuadrado de `img/Imagen de ChatGPT 24 oct 2026, 17_46_18-1.png` junto al texto Clarunio, alineado con la referencia móvil.
 - 2026-10-24 — Bug corregido: Expo Go Android fallaba al abrir Clarunio con `Cannot find native module 'ExpoTopicSubscriptionModule'` porque `notificationService.ts` importaba estáticamente `expo-notifications`. La solución detecta Expo Go con `expo-constants`, carga `expo-notifications` de forma dinámica solo cuando corresponde y captura fallos nativos; Ajustes informa que los recordatorios requieren un development build o APK compatible. Se agregaron pruebas unitarias de la política pura, sin inicializar módulos nativos.
 - 2026-10-24 — Corrección visual estructural de `Ahora`: el saludo pasó al hero antes de «¿Qué sigue?», las acciones disponibles se deduplican contra el foco, las acciones usan filas compactas con iconos accesibles y los módulos de Bandeja/revisión dejaron un único CTA discreto. Se mantienen datos reales, fechas `dueAt`, repositorios, undo, errores, carga, dark mode y reduced motion.
+- 2026-10-24 — Se rediseñó `Bandeja` como flujo de procesamiento GTD: hero orientado a acción, CTA `Capturar ahora`, resumen real, filas compactas de capturas con icono de bandeja, metadata relativa y acción explícita `Aclarar`, además de un estado vacío con CTA `Capturar algo`. Se mantiene navegación, carga, retry, dark mode, accesibilidad y reduced motion; `ItemList` no se eliminó porque no es necesario ampliar el alcance.
+
+## Evidencia del rediseño de Bandeja
+
+- **Archivos:** `app/(tabs)/inbox.tsx`, `src/shared/ui/InboxItemRow.tsx`, `src/shared/ui/inboxPresentation.ts`, `src/shared/ui/EmptyState.tsx`, `tests/inbox-presentation.test.ts`.
+- **Decisión:** la fecha relativa recibe `now` explícitamente para que la presentación sea pura y testeable con fecha fija; las filas siguen abriendo `/clarify/[id]` y conservan una acción visible independiente.
+- **Verificación:** `npm run typecheck` — 0 errores; `npm run lint` — 0 errores; `npm test -- --run` — 14 archivos, 39 pruebas aprobadas.
+- **Commit:** commit único `feat(ui): rediseña Bandeja para procesar capturas`.
 
 ## Evidencia de la corrección de Ahora
 

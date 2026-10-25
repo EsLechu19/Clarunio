@@ -3,14 +3,16 @@ import { Ionicons } from "@expo/vector-icons";
 
 import { radii, spacing } from "../theme/tokens";
 import { useAppTheme } from "../theme/useAppTheme";
+import { ActionButton } from "./ActionButton";
 
-export function EmptyState({ message }: { message: string }) {
+export function EmptyState({ message, actionLabel, icon = "sparkles-outline", onAction }: { message: string; actionLabel?: string; icon?: keyof typeof Ionicons.glyphMap; onAction?: () => void }) {
   const colors = useAppTheme();
 
   return (
     <View style={[styles.container, { backgroundColor: colors.surface, borderColor: colors.outline }]}>
-      <Ionicons accessibilityLabel="Estado vacío" color={colors.primary} name="sparkles-outline" size={30} />
+      <Ionicons accessibilityLabel="Estado vacío" color={colors.primary} name={icon} size={30} />
       <Text style={[styles.message, { color: colors.text }]}>{message}</Text>
+      {actionLabel && onAction ? <ActionButton icon="add" onPress={onAction}>{actionLabel}</ActionButton> : null}
     </View>
   );
 }
