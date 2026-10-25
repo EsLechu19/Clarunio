@@ -10,6 +10,7 @@ import { useProjectRepository } from "@/src/features/projects/data/useProjectRep
 import { useAppTheme } from "@/src/shared/theme/useAppTheme";
 import { spacing } from "@/src/shared/theme/tokens";
 import { Card } from "@/src/shared/ui/Card";
+import { useResponsive } from "@/src/shared/ui/useResponsive";
 import { getProjectFilterCounts, getProjectHighlights, matchesProjectFilter, projectStatusPresentation, type ProjectFilter, type ProjectWithItems } from "@/src/shared/ui/projectPresentation";
 
 export default function ProjectsScreen() {
@@ -19,12 +20,13 @@ export default function ProjectsScreen() {
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
   const [filter, setFilter] = useState<ProjectFilter>("ALL");
   const reducedMotion = useReducedMotion();
+  const responsive = useResponsive();
   const load = useCallback(async () => { setStatus("loading"); try { const loaded = await repository.listProjects(); setProjects(await Promise.all(loaded.map(async (project) => ({ ...project, items: await repository.listProjectItems(project.id) })))); setStatus("ready"); } catch { setStatus("error"); } }, [repository]);
   useFocusEffect(useCallback(() => { void load(); }, [load]));
   return (
     <Screen>
       <PageHero title="Proyectos" subtitle={status === "loading" ? "Cargando tus proyectos..." : "Resultados que requieren más de un paso."} />
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filters} accessibilityRole="tablist">
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={[styles.filters, { paddingRight: responsive.horizontalPadding }]} accessibilityRole="tablist">
         {(["ALL", "ACTIVE", "SOMEDAY", "COMPLETED"] as const).map((value) => {
           const labels = { ALL: "Todos", ACTIVE: "Activos", SOMEDAY: "Algún día", COMPLETED: "Completados" };
           const selected = filter === value;

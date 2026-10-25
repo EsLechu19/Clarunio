@@ -163,3 +163,13 @@ Dar vida a la interfaz existente sin inventar negocio: mejorar jerarquía, tarje
 - **Alcance:** no se edita `android/**`; el próximo `prebuild` o EAS debe regenerar los recursos nativos desde `app.json`. `transitions.dev` no controla el splash nativo previo a React; cualquier reveal posterior queda fuera de esta unidad.
 - **Evidencia:** `npx expo config --type public` resolvió el asset, `npm run typecheck` y `npm run lint` terminaron sin errores, y `npm test -- --run` pasó con 17 archivos y 55 pruebas.
 - **APK requerido:** hace falta generar un nuevo APK/development build para comprobar visualmente el splash nativo en Android; Expo Go no regenera ni representa este recurso nativo como evidencia final.
+
+## Capa responsive y safe areas — 2026-10-25
+
+- **Decisión:** se usa una sola composición basada en `useWindowDimensions`, con breakpoint compacto en `<360 dp`, padding horizontal adaptable y métricas puras separadas de React Native en `src/shared/ui/responsive.ts`.
+- **Safe areas:** `Screen` reserva espacio inferior para la navegación; `CaptureFab` calcula su elevación con el inset inferior y la altura de la tab bar. No se fijan offsets por modelo de teléfono.
+- **Superficies:** `PageHero` reduce títulos solo en compacto y conserva el escalado de fuentes; Captura envuelve el footer; Proyectos conserva filtros horizontales con conteos; Ajustes permite envolver opciones, filas y acciones de datos. Se mantienen Now, Bandeja y Search sin cambios de lógica.
+- **Archivos:** `src/shared/ui/responsive.ts`, `src/shared/ui/useResponsive.ts`, `Screen.tsx`, `PageHero.tsx`, `BrandHeader.tsx`, `CaptureFab.tsx`, `app/capture.tsx`, `app/(tabs)/projects.tsx`, `app/settings.tsx`, `tests/responsive.test.ts`.
+- **Tests puros:** breakpoint, ancho disponible, safe area y posición del FAB se prueban sin inicializar React Native/Vitest.
+- **Matriz de validación manual pendiente:** compacto `<360 dp`, Moto G54, teléfono ancho, fuente al 150%, dark mode, reduced motion y navegación Android por gestos/botones. Este entorno no dispone de esos dispositivos; no se afirma validación visual física.
+- **Limitaciones:** la comprobación automatizada confirma contratos de métricas y compilación, pero no sustituye la revisión visual del APK con teclado, lector de pantalla y fuentes grandes.

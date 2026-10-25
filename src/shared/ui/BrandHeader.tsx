@@ -19,9 +19,9 @@ export function BrandHeader() {
 }
 
 const styles = StyleSheet.create({
-  container: { alignItems: "center", flexDirection: "row", gap: spacing.sm },
+  container: { alignItems: "center", flexDirection: "row", flexShrink: 1, gap: spacing.sm, minWidth: 0 },
   logo: { borderRadius: 10, height: 34, width: 34 },
   mark: { alignItems: "center", borderRadius: 10, height: 36, justifyContent: "center", width: 36 },
   markText: { color: "#FFFFFF", fontSize: 20, fontWeight: "800" },
-  name: { fontSize: 18, fontWeight: "700" }
+  name: { flexShrink: 1, fontSize: 18, fontWeight: "700" }
 });

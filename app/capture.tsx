@@ -11,6 +11,7 @@ import { useAppTheme } from "@/src/shared/theme/useAppTheme";
 import { Motion } from "@/src/shared/ui/Motion";
 import { BackButton, navigateBack } from "@/src/shared/ui/BackButton";
 import { captureExitDecision } from "@/src/shared/ui/captureExitPolicy";
+import { useResponsive } from "@/src/shared/ui/useResponsive";
 
 const SAVE_ERROR = "No se pudo guardar. Intenta otra vez; mantendremos tu texto en pantalla.";
 type CaptureStatus = "idle" | "saving" | "success";
@@ -19,6 +20,7 @@ export default function CaptureScreen() {
   const colors = useAppTheme();
   const repository = useItemRepository();
   const reducedMotion = useReducedMotion();
+  const responsive = useResponsive();
   const [text, setText] = useState("");
   const [status, setStatus] = useState<CaptureStatus>("idle");
   const [error, setError] = useState<string | null>(null);
@@ -81,13 +83,13 @@ export default function CaptureScreen() {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.container}>
-        <Motion variant="capture"><ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
+        <Motion variant="capture"><ScrollView contentContainerStyle={[styles.content, { paddingHorizontal: responsive.horizontalPadding }]} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
         <BackButton fallback="/(tabs)/index" label="Cerrar captura" variant="close" onPress={exitCapture} />
-        <Text style={[styles.title, { color: colors.text }]}>¿Qué tienes en mente?</Text>
+        <Text style={[styles.title, { color: colors.text, fontSize: responsive.isCompact ? 28 : 32, lineHeight: responsive.isCompact ? 34 : 40 }]}>¿Qué tienes en mente?</Text>
         <Text style={{ color: colors.textSecondary }}>Anotá primero. Las decisiones vienen después.</Text>
         <Animated.View layout={reducedMotion ? undefined : LinearTransition.duration(220).reduceMotion(ReduceMotion.System)} style={[styles.composer, { backgroundColor: colors.surface, borderColor: error ? colors.error : colors.outline }, shakeStyle]}>
           <TextInput accessibilityLabel="Texto de captura" multiline onChangeText={(value) => { setText(value); if (error) setError(null); }} onContentSizeChange={(event) => setInputHeight(Math.min(260, Math.max(156, event.nativeEvent.contentSize.height + spacing.md * 2)))} placeholder="Escribe una idea, pendiente o compromiso" placeholderTextColor={colors.textSecondary} style={[styles.input, { color: colors.text, height: inputHeight }]} value={text} />
-          <View style={styles.composerFooter}>
+          <View style={[styles.composerFooter, responsive.isCompact && styles.composerFooterCompact]}>
             <Text style={[styles.hint, { color: colors.textSecondary }]}>Se guardará directamente en Bandeja.</Text>
             <Pressable accessibilityLabel={status === "success" ? "Captura guardada" : "Guardar en bandeja"} accessibilityRole="button" accessibilityState={{ busy: status === "saving", disabled: status !== "idle" }} disabled={status !== "idle"} onPress={() => void saveCapture()} style={({ pressed }) => [styles.saveButton, { backgroundColor: status === "success" ? colors.success : pressed ? colors.primaryPressed : colors.primary, opacity: status === "saving" ? 0.8 : 1 }]}>
               {status === "saving" ? <ActivityIndicator color="#FFFFFF" size="small" /> : <Ionicons color="#FFFFFF" name={status === "success" ? "checkmark" : "arrow-up"} size={20} />}
@@ -111,6 +113,7 @@ const styles = StyleSheet.create({
   composer: { borderRadius: radii.panel, borderWidth: 1, elevation: 2, gap: spacing.sm, padding: spacing.md, shadowColor: "#2C1A63", shadowOpacity: 0.08, shadowRadius: 12 },
   input: { fontSize: 20, lineHeight: 28, padding: 0, textAlignVertical: "top" },
   composerFooter: { alignItems: "center", flexDirection: "row", gap: spacing.sm, justifyContent: "space-between" },
+  composerFooterCompact: { alignItems: "stretch", flexDirection: "column" },
   hint: { flex: 1, fontSize: 13, lineHeight: 18 },
   saveButton: { alignItems: "center", borderRadius: radii.pill, flexDirection: "row", gap: spacing.xs, justifyContent: "center", minHeight: 48, paddingHorizontal: spacing.md },
   saveLabel: { color: "#FFFFFF", fontSize: 15, fontWeight: "800" },
