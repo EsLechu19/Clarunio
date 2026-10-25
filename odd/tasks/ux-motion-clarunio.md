@@ -188,3 +188,17 @@ Dar vida a la interfaz existente sin inventar negocio: mejorar jerarquía, tarje
 - **Decisión:** el estado usa una superficie temática y un skeleton opcional; la animación de opacidad se omite cuando el sistema solicita movimiento reducido y el texto sigue siendo legible con fuentes grandes.
 - **Tests:** no se agregaron tests de React Native; no existe un contrato puro nuevo que aporte valor sin forzar el entorno de UI.
 - **Riesgos:** queda pendiente validación visual en Android real con lector de pantalla, fuentes grandes, dark mode y movimiento reducido.
+
+## Unidad de trabajo — acceso a Datos desde Ajustes — 2026-10-25
+
+- [x] Agregar una acción visible y accesible dentro de la sección Datos de Ajustes.
+- [x] Navegar a `/data` con `router.navigate` para evitar duplicar la ruta actual en el historial.
+- [x] Mantener exportación, importación, validación, confirmaciones destructivas y contratos existentes sin cambios.
+- [x] Conservar copy en español, tema claro/oscuro, responsive, safe areas, reduced motion y objetivo táctil existente mediante `DataAction`.
+- [x] No agregar dependencias ni modificar SQLite, dominio GTD, backup, reglas de negocio o assets.
+
+### Evidencia
+
+- **Archivos:** `app/settings.tsx`, `odd/tasks/ux-motion-clarunio.md`.
+- **Decisión:** se reutiliza `DataAction` con el copy «Gestionar mis datos» y una descripción que explica el alcance de `/data`; la navegación usa `router.navigate` en línea con los accesos globales existentes.
+- **Riesgos:** queda pendiente validación visual en Android real con lector de pantalla, fuentes grandes, dark mode y movimiento reducido.
