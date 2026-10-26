@@ -1,6 +1,8 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, Alert, Pressable, StyleSheet, Text, View } from "react-native";
 import { router, useFocusEffect } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
+import Animated, { FadeIn, FadeOut, LinearTransition, ReduceMotion, useAnimatedStyle, useReducedMotion, useSharedValue, withTiming } from "react-native-reanimated";
 
 import { useReviewRepository } from "@/src/features/review/data/useReviewRepository";
 import { REVIEW_STEPS, type ReviewDecisionSummary, type ReviewSession, type ReviewStep, type ReviewSummary } from "@/src/features/review/domain/review";
@@ -70,11 +72,11 @@ export default function ReviewScreen() {
      <MascotIllustration accessibilityLabel="Mascota acompañando la revisión semanal" variant="weeklyReview" size="compact" />
      <Text style={{ color: colors.textSecondary }}>Etapa {stepIndex + 1} de {REVIEW_STEPS.length}: {LABELS[session.currentStep]}</Text>
      <Text accessibilityLiveRegion="polite" style={{ color: colors.textSecondary }}>{progress.reviewed} revisados · {progress.omitted} omitidos · {progress.undecided} sin decidir de {progress.total}</Text>
-     <View accessibilityLabel={`Progreso de revisión: ${progress.reviewed} revisados, ${progress.omitted} omitidos y ${progress.undecided} sin decidir de ${progress.total}`} accessibilityRole="progressbar" accessibilityValue={{ min: 0, max: progress.total, now: progress.total - progress.undecided }} style={[styles.progress, { backgroundColor: colors.outline }]}><View style={[styles.progressFill, { backgroundColor: colors.primary, width: `${progress.total ? ((progress.total - progress.undecided) / progress.total) * 100 : 0}%` }]} /></View>
+      <ReviewProgress colors={colors} progress={progress} />
     {error ? <Text accessibilityRole="alert" style={{ color: colors.error }}>{error}</Text> : null}
      <Motion><Card>
       <Text style={[styles.heading, { color: colors.text }]}>{LABELS[session.currentStep]}</Text>
-      {isClosure ? <Text style={{ color: colors.textSecondary }}>Resumen real: {progress.reviewed} revisados, {progress.omitted} omitidos y {progress.undecided} sin decidir.</Text> : items.length ? <View accessibilityRole="list" accessibilityLabel={`Elementos de ${LABELS[session.currentStep]}`} style={styles.items}>{items.map((item) => <Motion key={item.id}><View style={[styles.item, { borderColor: colors.outline, backgroundColor: colors.surface }]}><Pressable accessibilityRole="button" accessibilityLabel={`${item.title}. ${LABELS[session.currentStep]}`} accessibilityHint="Abre el elemento para revisarlo" onPress={() => router.navigate(getReviewItemRoute(session.currentStep, item.id))}><Text style={{ color: colors.text }}>{item.title}</Text></Pressable><View style={styles.itemActions}><ActionButton disabled={busy} variant={item.decision === "REVIEWED" ? "primary" : "secondary"} onPress={() => void decide(item.id, "REVIEWED")}>Marcar revisado</ActionButton><ActionButton disabled={busy} variant={item.decision === "OMITTED" ? "primary" : "secondary"} onPress={() => void decide(item.id, "OMITTED")}>Omitir</ActionButton></View></View></Motion>)}</View> : <Text style={{ color: colors.textSecondary }}>No hay elementos pendientes en esta etapa.</Text>}
+      {isClosure ? <Text style={{ color: colors.textSecondary }}>Resumen real: {progress.reviewed} revisados, {progress.omitted} omitidos y {progress.undecided} sin decidir.</Text> : items.length ? <View accessibilityRole="list" accessibilityLabel={`Elementos de ${LABELS[session.currentStep]}`} style={styles.items}>{items.map((item) => <ReviewItem key={item.id} item={item} busy={busy} colors={colors} step={session.currentStep} onDecide={decide} />)}</View> : <Text style={{ color: colors.textSecondary }}>No hay elementos pendientes en esta etapa.</Text>}
      </Card></Motion>
      <View style={styles.actions}>
        {isClosure ? <ActionButton disabled={busy} icon="checkmark-circle-outline" onPress={() => void finish()}>Terminar revisión</ActionButton> : <ActionButton disabled={busy} icon="arrow-forward" onPress={() => void next()}>Siguiente etapa</ActionButton>}
@@ -86,4 +88,27 @@ export default function ReviewScreen() {
 }
 
 function localDate(): string { const date = new Date(); return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`; }
-  const styles = StyleSheet.create({ card: { borderRadius: radii.card, borderWidth: 1, gap: spacing.sm, padding: spacing.md }, heading: { fontSize: 20, fontWeight: "800" }, progress: { height: 8, borderRadius: radii.pill, backgroundColor: "#E7E0F2", overflow: "hidden" }, progressFill: { height: "100%" }, items: { gap: spacing.sm }, item: { borderRadius: radii.card, borderWidth: 1, gap: spacing.sm, minHeight: 48, padding: spacing.md }, itemActions: { flexDirection: "row", flexWrap: "wrap", gap: spacing.sm }, actions: { flexDirection: "row", flexWrap: "wrap", gap: spacing.lg } });
+
+function ReviewProgress({ colors, progress }: { colors: ReturnType<typeof useAppTheme>; progress: ReviewDecisionSummary }) {
+  const reducedMotion = useReducedMotion();
+  const animatedProgress = useSharedValue(progress.total ? ((progress.total - progress.undecided) / progress.total) * 100 : 0);
+  useEffect(() => {
+    const nextProgress = progress.total ? ((progress.total - progress.undecided) / progress.total) * 100 : 0;
+    animatedProgress.value = reducedMotion ? nextProgress : withTiming(nextProgress, { duration: 180 });
+  }, [animatedProgress, progress.total, progress.undecided, reducedMotion]);
+  const fillStyle = useAnimatedStyle(() => ({ width: `${animatedProgress.value}%` }));
+  return <View accessibilityLabel={`Progreso de revisión: ${progress.reviewed} revisados, ${progress.omitted} omitidos y ${progress.undecided} sin decidir de ${progress.total}`} accessibilityRole="progressbar" accessibilityValue={{ min: 0, max: progress.total, now: progress.total - progress.undecided }} style={[styles.progress, { backgroundColor: colors.outline }]}><Animated.View style={[styles.progressFill, { backgroundColor: colors.primary }, fillStyle]} /></View>;
+}
+
+function ReviewItem({ item, busy, colors, step, onDecide }: { item: { id: string; title: string; state: string; decision: "REVIEWED" | "OMITTED" | null }; busy: boolean; colors: ReturnType<typeof useAppTheme>; step: ReviewStep; onDecide: (entityId: string, decision: "REVIEWED" | "OMITTED") => Promise<void> }) {
+  const reducedMotion = useReducedMotion();
+  return <Motion><Animated.View layout={reducedMotion ? undefined : LinearTransition.duration(220).reduceMotion(ReduceMotion.System)} style={[styles.item, { borderColor: colors.outline, backgroundColor: colors.surface }]}><Pressable accessibilityRole="button" accessibilityLabel={`${item.title}. ${LABELS[step]}`} accessibilityHint="Abre el elemento para revisarlo" onPress={() => router.navigate(getReviewItemRoute(step, item.id))}><Text style={{ color: colors.text }}>{item.title}</Text></Pressable><ReviewDecisionStatus colors={colors} decision={item.decision} /><View style={styles.itemActions}><ActionButton disabled={busy} variant={item.decision === "REVIEWED" ? "primary" : "secondary"} onPress={() => void onDecide(item.id, "REVIEWED")}>Marcar revisado</ActionButton><ActionButton disabled={busy} variant={item.decision === "OMITTED" ? "primary" : "secondary"} onPress={() => void onDecide(item.id, "OMITTED")}>Omitir</ActionButton></View></Animated.View></Motion>;
+}
+
+function ReviewDecisionStatus({ colors, decision }: { colors: ReturnType<typeof useAppTheme>; decision: "REVIEWED" | "OMITTED" | null }) {
+  const reducedMotion = useReducedMotion();
+  const status = decision === "REVIEWED" ? { icon: "checkmark-circle" as const, label: "Revisado" } : decision === "OMITTED" ? { icon: "arrow-forward-circle" as const, label: "Omitido" } : { icon: "ellipse-outline" as const, label: "Sin decidir" };
+  return <View style={styles.status} accessibilityLiveRegion="polite"><Animated.View key={status.label} entering={reducedMotion ? undefined : FadeIn.duration(160).reduceMotion(ReduceMotion.System)} exiting={reducedMotion ? undefined : FadeOut.duration(120).reduceMotion(ReduceMotion.System)} style={styles.status}><Ionicons color={status.label === "Sin decidir" ? colors.textSecondary : colors.primary} name={status.icon} size={20} /><Text style={[styles.statusLabel, { color: colors.textSecondary }]}>{status.label}</Text></Animated.View></View>;
+}
+
+const styles = StyleSheet.create({ card: { borderRadius: radii.card, borderWidth: 1, gap: spacing.sm, padding: spacing.md }, heading: { fontSize: 20, fontWeight: "800" }, progress: { height: 8, borderRadius: radii.pill, backgroundColor: "#E7E0F2", overflow: "hidden" }, progressFill: { height: "100%" }, items: { gap: spacing.sm }, item: { borderRadius: radii.card, borderWidth: 1, gap: spacing.sm, minHeight: 48, padding: spacing.md }, itemActions: { flexDirection: "row", flexWrap: "wrap", gap: spacing.sm }, actions: { flexDirection: "row", flexWrap: "wrap", gap: spacing.lg }, status: { alignItems: "center", flexDirection: "row", gap: spacing.xs, minHeight: 24 }, statusLabel: { color: "#6B6478", fontSize: 14, fontWeight: "700" } });

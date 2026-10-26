@@ -273,3 +273,18 @@ Dar vida a la interfaz existente sin inventar negocio: mejorar jerarquía, tarje
 - **Decisión de producto segura:** no se inventa una decisión al abrir un detalle; avanzar/terminar permite continuar solo después de una confirmación explícita.
 - **Riesgos:** falta validación visual en Android real con lector de pantalla, fuentes grandes, dark mode, safe areas y movimiento reducido; no se ejecutó un APK en este entorno.
 - **Commit:** `5673a85` — `feat(revision): guardo decisiones de revisión`.
+
+## Unidad de trabajo — motion unificado de Revisión semanal — 2026-10-26
+
+- [x] Aplicar `LinearTransition` al reacomodo de cada tarjeta cuando aparece o cambia el estado de decisión.
+- [x] Comunicar `Sin decidir`, `Revisado` y `Omitido` con texto e iconos explícitos, además de los estilos de las acciones.
+- [x] Animar el ancho de la barra de progreso con `withTiming` durante 180 ms, sin retrasar la siguiente decisión.
+- [x] Omitir entrada/salida, reflow y transición de progreso cuando `useReducedMotion` está activo.
+- [x] Mantener intactas la persistencia, las etapas, la confirmación y las reglas GTD.
+
+### Evidencia
+
+- **Archivo:** `app/review.tsx`.
+- **Patrones adaptados:** `LinearTransition` para resize/reflow de tarjetas, `FadeIn`/`FadeOut` para el swap de estado e icono y `withTiming` para el progreso; se usaron únicamente primitivas existentes de React Native/Reanimated.
+- **Accesibilidad:** cada estado conserva una etiqueta textual y una actualización polite; la barra mantiene `progressbar` y valores semánticos; las acciones existentes siguen teniendo targets táctiles y labels explícitos.
+- **Riesgos:** falta validación visual en Android real con lector de pantalla, fuentes grandes, dark mode, safe areas y movimiento reducido; no se ejecutó un APK en este entorno.
