@@ -2,6 +2,9 @@ export const REVIEW_STEPS = ["INBOX", "NEXT", "WAITING", "PROJECTS", "SCHEDULED_
 export type ReviewStep = (typeof REVIEW_STEPS)[number];
 export type ReviewKind = "WEEKLY" | "RECOVERY";
 export type ReviewState = "IN_PROGRESS" | "COMPLETED" | "CANCELLED";
+export type ReviewDecisionValue = "REVIEWED" | "OMITTED";
+export type ReviewDecision = { sessionId: string; entityId: string; step: ReviewStep; decision: ReviewDecisionValue; decidedAt: string };
+export type ReviewDecisionSummary = { reviewed: number; omitted: number; undecided: number; total: number };
 
 export type ReviewSession = {
   id: string;
@@ -33,3 +36,5 @@ export function nextReviewStep(step: ReviewStep): ReviewStep {
   const index = REVIEW_STEPS.indexOf(step);
   return REVIEW_STEPS[Math.min(index + 1, REVIEW_STEPS.length - 1)] ?? "CLOSURE";
 }
+
+export const EMPTY_REVIEW_DECISION_SUMMARY: ReviewDecisionSummary = { reviewed: 0, omitted: 0, undecided: 0, total: 0 };

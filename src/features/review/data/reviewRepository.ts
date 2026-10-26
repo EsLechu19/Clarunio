@@ -1,6 +1,6 @@
 import type { SQLiteDatabase } from "expo-sqlite";
 
-import { EMPTY_REVIEW_SUMMARY, nextReviewStep, type ReviewKind, type ReviewSession, type ReviewStep, type ReviewSummary } from "../domain/review";
+import { EMPTY_REVIEW_DECISION_SUMMARY, EMPTY_REVIEW_SUMMARY, nextReviewStep, type ReviewDecision, type ReviewDecisionSummary, type ReviewDecisionValue, type ReviewKind, type ReviewSession, type ReviewStep, type ReviewSummary } from "../domain/review";
 
 type SessionRow = { id: string; kind: ReviewKind; state: ReviewSession["state"]; current_step: ReviewStep; started_at: string; finished_at: string | null; summary_json: string };
 
@@ -39,6 +39,37 @@ export class SQLiteReviewRepository {
               : ["1 = 0", []];
     if (step === "PROJECTS") return this.database.getAllAsync<{ id: string; title: string; state: string }>("SELECT id, desired_outcome AS title, status AS state FROM projects WHERE status = 'ACTIVE' AND NOT EXISTS (SELECT 1 FROM items WHERE items.project_id = projects.id AND items.state = 'NEXT') AND blocked_reason IS NULL ORDER BY sort_order, created_at");
     return this.database.getAllAsync<{ id: string; title: string; state: string }>(`SELECT id, title, state FROM items WHERE ${query[0]} ORDER BY sort_order, created_at`, ...query[1]);
+  }
+
+  async listDecisions(sessionId: string, step?: ReviewStep): Promise<ReviewDecision[]> {
+    const rows = await this.database.getAllAsync<ReviewDecision & { session_id: string; entity_id: string; decided_at: string }>(
+      step ? "SELECT session_id, entity_id, step, decision, decided_at FROM review_decisions WHERE session_id = ? AND step = ?" : "SELECT session_id, entity_id, step, decision, decided_at FROM review_decisions WHERE session_id = ?",
+      ...(step ? [sessionId, step] : [sessionId])
+    );
+    return rows.map((row) => ({ sessionId: row.session_id, entityId: row.entity_id, step: row.step, decision: row.decision, decidedAt: row.decided_at }));
+  }
+
+  async saveDecision(session: ReviewSession, entityId: string, step: ReviewStep, decision: ReviewDecisionValue): Promise<ReviewDecision> {
+    const decidedAt = new Date().toISOString();
+    await this.database.runAsync("INSERT INTO review_decisions (session_id, entity_id, step, decision, decided_at) VALUES (?, ?, ?, ?, ?) ON CONFLICT(session_id, entity_id, step) DO UPDATE SET decision = excluded.decision, decided_at = excluded.decided_at", session.id, entityId, step, decision, decidedAt);
+    return { sessionId: session.id, entityId, step, decision, decidedAt };
+  }
+
+  async getDecisionSummary(sessionId: string, step: ReviewStep, total: number): Promise<ReviewDecisionSummary> {
+    const rows = await this.database.getAllAsync<{ decision: ReviewDecisionValue; count: number }>("SELECT decision, COUNT(*) AS count FROM review_decisions WHERE session_id = ? AND step = ? GROUP BY decision", sessionId, step);
+    const reviewed = rows.find((row) => row.decision === "REVIEWED")?.count ?? 0;
+    const omitted = rows.find((row) => row.decision === "OMITTED")?.count ?? 0;
+    return { ...EMPTY_REVIEW_DECISION_SUMMARY, reviewed, omitted, undecided: Math.max(total - reviewed - omitted, 0), total };
+  }
+
+  async getSessionDecisionSummary(sessionId: string, today: string): Promise<ReviewDecisionSummary> {
+    const steps: ReviewStep[] = ["INBOX", "NEXT", "WAITING", "PROJECTS", "SCHEDULED_SOMEDAY"];
+    const decisions = await this.listDecisions(sessionId);
+    const totals = await Promise.all(steps.map(async (step) => (await this.listStepItems(step, today)).map((item) => `${step}:${item.id}`)));
+    const entities = new Set(totals.flat());
+    const reviewed = decisions.filter((decision) => decision.decision === "REVIEWED" && entities.has(`${decision.step}:${decision.entityId}`)).length;
+    const omitted = decisions.filter((decision) => decision.decision === "OMITTED" && entities.has(`${decision.step}:${decision.entityId}`)).length;
+    return { reviewed, omitted, undecided: Math.max(entities.size - reviewed - omitted, 0), total: entities.size };
   }
 
   async resumeOrCreate(kind: ReviewKind, summary: ReviewSummary): Promise<ReviewSession> {

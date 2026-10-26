@@ -257,3 +257,19 @@ Dar vida a la interfaz existente sin inventar negocio: mejorar jerarquía, tarje
 - **Evidencia de assets:** los nueve PNG confirmados se inspeccionaron como RGBA; las esquinas fueron transparentes (`alpha=0`) en cada archivo. No se modificó ningún asset.
 - **Verificación:** `npm run typecheck` — 0 errores; `npm run lint` — 0 errores; `npm test -- --run` — 19 archivos, 61 pruebas aprobadas.
 - **Riesgos:** queda pendiente validación visual en Android real con lector de pantalla, fuentes grandes, dark mode, safe areas y movimiento reducido; la ruta con `ñ` y espacios debe validarse también en el bundle Android final.
+
+## Unidad vertical — decisiones persistentes de Revisión semanal — 2026-10-26
+
+- [x] Persistir por sesión, elemento, etapa y decisión (`REVIEWED`/`OMITTED`) en SQLite v6, con FK, clave primaria compuesta y actualización idempotente.
+- [x] Mostrar acciones accesibles por fila, progreso real y resumen de revisados/omitidos/sin decidir; recargar al volver desde un detalle.
+- [x] Confirmar de forma accesible el avance o cierre con elementos sin decidir y proteger Siguiente, Pausar, Cancelar y Terminar contra doble pulsación.
+- [x] Exportar/importar decisiones sin subir `BACKUP_SCHEMA_VERSION`; los respaldos v1 previos siguen importando con una lista vacía.
+- [x] Mantener intactos los estados GTD: marcar una revisión nunca cambia `items.state`.
+
+### Evidencia
+
+- **Archivos:** `src/features/items/data/migrations.ts`, `src/features/review/domain/review.ts`, `src/features/review/data/reviewRepository.ts`, `app/review.tsx`, `src/features/backup/domain/backup.ts`, `src/features/backup/data/backupRepository.ts`, `tests/m5-review-recovery.test.ts`, `tests/m6-backup-settings.test.ts`.
+- **Verificación:** `npm run typecheck` — 0 errores; `npm run lint` — 0 errores; `npm test -- --run` — 19 archivos, 64 pruebas aprobadas.
+- **Decisión de producto segura:** no se inventa una decisión al abrir un detalle; avanzar/terminar permite continuar solo después de una confirmación explícita.
+- **Riesgos:** falta validación visual en Android real con lector de pantalla, fuentes grandes, dark mode, safe areas y movimiento reducido; no se ejecutó un APK en este entorno.
+- **Commit:** `5673a85` — `feat(revision): guardo decisiones de revisión`.

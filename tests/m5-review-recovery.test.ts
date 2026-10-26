@@ -21,6 +21,13 @@ describe("Clarunio M5 revisión y recuperación", () => {
     expect(db.execAsync).toHaveBeenCalledWith("PRAGMA user_version = 4");
   });
 
+  it("crea decisiones persistentes en la migración v6", async () => {
+    const db = database();
+    await initializeDatabase(db as never);
+    expect(db.execAsync).toHaveBeenCalledWith(expect.stringContaining("CREATE TABLE IF NOT EXISTS review_decisions"));
+    expect(db.execAsync).toHaveBeenCalledWith("PRAGMA user_version = 6");
+  });
+
   it("reanuda la única sesión semanal en curso sin crear otra", async () => {
     const db = database();
     db.getFirstAsync.mockImplementation(async (query: string) => query.includes("review_sessions") ? { id: "review-1", kind: "WEEKLY", state: "IN_PROGRESS", current_step: "WAITING", started_at: "2026-10-22T10:00:00.000Z", finished_at: null, summary_json: '{"waiting":2}' } : null);
@@ -45,5 +52,15 @@ describe("Clarunio M5 revisión y recuperación", () => {
     const repository = new SQLiteReviewRepository(db as never);
     await repository.cancel({ id: "review-1", kind: "RECOVERY", state: "IN_PROGRESS", currentStep: "INBOX", startedAt: "2026-10-22T10:00:00.000Z", finishedAt: null, summary: { inbox: 0, next: 0, waiting: 0, projectsWithoutNext: 0, scheduledSomeday: 0 } });
     expect(db.runAsync).toHaveBeenCalledWith(expect.stringContaining("finished_at"), "INBOX", "CANCELLED", expect.any(String), expect.stringContaining('"inbox":0'), "review-1");
+  });
+
+  it("registra y consulta una decisión sin tocar el estado GTD", async () => {
+    const db = database();
+    db.getAllAsync.mockResolvedValue([{ session_id: "review-1", entity_id: "item-1", step: "INBOX", decision: "OMITTED", decided_at: "2026-10-22T11:00:00.000Z" }]);
+    const repository = new SQLiteReviewRepository(db as never);
+    const session = { id: "review-1", kind: "WEEKLY" as const, state: "IN_PROGRESS" as const, currentStep: "INBOX" as const, startedAt: "2026-10-22T10:00:00.000Z", finishedAt: null, summary: { inbox: 1, next: 0, waiting: 0, projectsWithoutNext: 0, scheduledSomeday: 0 } };
+    await repository.saveDecision(session, "item-1", "INBOX", "OMITTED");
+    expect(db.runAsync).toHaveBeenCalledWith(expect.stringContaining("review_decisions"), "review-1", "item-1", "INBOX", "OMITTED", expect.any(String));
+    await expect(repository.listDecisions("review-1", "INBOX")).resolves.toEqual([{ sessionId: "review-1", entityId: "item-1", step: "INBOX", decision: "OMITTED", decidedAt: "2026-10-22T11:00:00.000Z" }]);
   });
 });

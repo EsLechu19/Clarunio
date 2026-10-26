@@ -11,6 +11,12 @@ describe("M6 validación de backups", () => {
     expect(() => validateBackup({ ...valid, schemaVersion: 2 })).toThrow("versión");
     expect(() => validateBackup({ ...valid, data: { ...valid.data, items: [{ id: "item-1", title: "Acción", notes: null, state: "NEXT", project_id: "missing", waiting_for: null }] } })).toThrow("referencia");
   });
+
+  it("conserva decisiones y acepta respaldos v1 sin decisiones", () => {
+    const decision = { session_id: "review-1", entity_id: "item-1", step: "INBOX", decision: "REVIEWED", decided_at: "2026-10-22T11:00:00.000Z" };
+    expect(validateBackup({ ...valid, data: { ...valid.data, reviewSessions: [{ id: "review-1", kind: "WEEKLY", state: "IN_PROGRESS", current_step: "INBOX", started_at: "2026-10-22T10:00:00.000Z", finished_at: null, summary_json: "{}" }], reviewDecisions: [decision] }}).data.reviewDecisions).toEqual([decision]);
+    expect(validateBackup(valid).data.reviewDecisions).toEqual([]);
+  });
 });
 
 describe("M6 ajustes", () => {

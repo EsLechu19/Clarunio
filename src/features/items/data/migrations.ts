@@ -1,6 +1,6 @@
 import type { SQLiteDatabase } from "expo-sqlite";
 
-export const CURRENT_SCHEMA_VERSION = 5;
+export const CURRENT_SCHEMA_VERSION = 6;
 
 export async function initializeDatabase(database: SQLiteDatabase): Promise<void> {
   await database.execAsync("PRAGMA journal_mode = WAL; PRAGMA foreign_keys = ON;");
@@ -99,6 +99,20 @@ export async function initializeDatabase(database: SQLiteDatabase): Promise<void
         CREATE INDEX IF NOT EXISTS idx_projects_notes ON projects (notes);
       `);
       await database.execAsync("PRAGMA user_version = 5");
+    }
+    if (version.user_version < 6) {
+      await database.execAsync(`
+        CREATE TABLE IF NOT EXISTS review_decisions (
+          session_id TEXT NOT NULL REFERENCES review_sessions(id) ON DELETE CASCADE,
+          entity_id TEXT NOT NULL,
+          step TEXT NOT NULL,
+          decision TEXT NOT NULL CHECK (decision IN ('REVIEWED', 'OMITTED')),
+          decided_at TEXT NOT NULL,
+          PRIMARY KEY (session_id, entity_id, step)
+        );
+        CREATE INDEX IF NOT EXISTS idx_review_decisions_session_step ON review_decisions (session_id, step);
+      `);
+      await database.execAsync("PRAGMA user_version = 6");
     }
   });
 }
