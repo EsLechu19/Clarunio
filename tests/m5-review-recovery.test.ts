@@ -32,7 +32,7 @@ describe("Clarunio M5 revisión y recuperación", () => {
     const db = database();
     db.getFirstAsync.mockImplementation(async (query: string) => query.includes("review_sessions") ? { id: "review-1", kind: "WEEKLY", state: "IN_PROGRESS", current_step: "WAITING", started_at: "2026-10-22T10:00:00.000Z", finished_at: null, summary_json: '{"waiting":2}' } : null);
     const repository = new SQLiteReviewRepository(db as never);
-    const session = await repository.resumeOrCreate("WEEKLY", { inbox: 1, next: 2, waiting: 3, projectsWithoutNext: 0, scheduledSomeday: 0 });
+    const session = await repository.resumeOrCreate("WEEKLY", { inbox: 1, next: 2, waiting: 3, projectsWithoutNext: 0, scheduled: 0, someday: 0 });
     expect(session.currentStep).toBe("WAITING");
     expect(db.runAsync).not.toHaveBeenCalled();
   });
@@ -50,7 +50,7 @@ describe("Clarunio M5 revisión y recuperación", () => {
     const db = database();
     db.getFirstAsync.mockResolvedValue({ id: "review-1", kind: "RECOVERY", state: "CANCELLED", current_step: "INBOX", started_at: "2026-10-22T10:00:00.000Z", finished_at: "2026-10-22T11:00:00.000Z", summary_json: "{}" });
     const repository = new SQLiteReviewRepository(db as never);
-    await repository.cancel({ id: "review-1", kind: "RECOVERY", state: "IN_PROGRESS", currentStep: "INBOX", startedAt: "2026-10-22T10:00:00.000Z", finishedAt: null, summary: { inbox: 0, next: 0, waiting: 0, projectsWithoutNext: 0, scheduledSomeday: 0 } });
+    await repository.cancel({ id: "review-1", kind: "RECOVERY", state: "IN_PROGRESS", currentStep: "INBOX", startedAt: "2026-10-22T10:00:00.000Z", finishedAt: null, summary: { inbox: 0, next: 0, waiting: 0, projectsWithoutNext: 0, scheduled: 0, someday: 0 } });
     expect(db.runAsync).toHaveBeenCalledWith(expect.stringContaining("finished_at"), "INBOX", "CANCELLED", expect.any(String), expect.stringContaining('"inbox":0'), "review-1");
   });
 
@@ -58,9 +58,30 @@ describe("Clarunio M5 revisión y recuperación", () => {
     const db = database();
     db.getAllAsync.mockResolvedValue([{ session_id: "review-1", entity_id: "item-1", step: "INBOX", decision: "OMITTED", decided_at: "2026-10-22T11:00:00.000Z" }]);
     const repository = new SQLiteReviewRepository(db as never);
-    const session = { id: "review-1", kind: "WEEKLY" as const, state: "IN_PROGRESS" as const, currentStep: "INBOX" as const, startedAt: "2026-10-22T10:00:00.000Z", finishedAt: null, summary: { inbox: 1, next: 0, waiting: 0, projectsWithoutNext: 0, scheduledSomeday: 0 } };
+    const session = { id: "review-1", kind: "WEEKLY" as const, state: "IN_PROGRESS" as const, currentStep: "INBOX" as const, startedAt: "2026-10-22T10:00:00.000Z", finishedAt: null, summary: { inbox: 1, next: 0, waiting: 0, projectsWithoutNext: 0, scheduled: 0, someday: 0 } };
     await repository.saveDecision(session, "item-1", "INBOX", "OMITTED");
     expect(db.runAsync).toHaveBeenCalledWith(expect.stringContaining("review_decisions"), "review-1", "item-1", "INBOX", "OMITTED", expect.any(String));
     await expect(repository.listDecisions("review-1", "INBOX")).resolves.toEqual([{ sessionId: "review-1", entityId: "item-1", step: "INBOX", decision: "OMITTED", decidedAt: "2026-10-22T11:00:00.000Z" }]);
+  });
+
+  it("separa consultas y decisiones de Programadas y Algún día", async () => {
+    const db = database();
+    const repository = new SQLiteReviewRepository(db as never);
+    await repository.listStepItems("SCHEDULED", "2026-10-22");
+    expect(db.getAllAsync).toHaveBeenCalledWith(expect.stringContaining("state = 'SCHEDULED'"));
+    await repository.listStepItems("SOMEDAY", "2026-10-22");
+    expect(db.getAllAsync).toHaveBeenCalledWith(expect.stringContaining("state = 'SOMEDAY'"));
+    await repository.saveDecision({ id: "review-1" } as never, "item-1", "SOMEDAY", "REVIEWED");
+    expect(db.runAsync).toHaveBeenCalledWith(expect.stringContaining("review_decisions"), "review-1", "item-1", "SOMEDAY", "REVIEWED", expect.any(String));
+  });
+
+  it("reanuda una etapa legacy y la deja avanzar al cierre", async () => {
+    const db = database();
+    db.getFirstAsync.mockResolvedValue({ id: "review-legacy", kind: "WEEKLY", state: "IN_PROGRESS", current_step: "SCHEDULED_SOMEDAY", started_at: "2026-10-22T10:00:00.000Z", finished_at: null, summary_json: "{}" });
+    const repository = new SQLiteReviewRepository(db as never);
+    const session = await repository.resumeOrCreate("WEEKLY", { inbox: 0, next: 0, waiting: 0, projectsWithoutNext: 0, scheduled: 0, someday: 0 });
+    expect(session.currentStep).toBe("SCHEDULED_SOMEDAY");
+    await repository.advance(session, session.summary);
+    expect(db.runAsync).toHaveBeenCalledWith(expect.stringContaining("current_step"), "CLOSURE", "IN_PROGRESS", null, expect.any(String), "review-legacy");
   });
 });

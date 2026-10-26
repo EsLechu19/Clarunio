@@ -306,3 +306,19 @@ Dar vida a la interfaz existente sin inventar negocio: mejorar jerarquía, tarje
 - **Tests:** `tests/review-presentation.test.ts` cubre la agrupación de los seis pasos y las cuatro claves reales del resumen, sin inicializar React Native.
 - **Verificación:** `npm run typecheck`, `npm run lint` y `npm test -- --run` pasan; el último ejecuta 20 archivos y 66 pruebas.
 - **Riesgos:** queda pendiente validación visual en Android real con lector de pantalla, fuentes grandes, dark mode, safe areas y movimiento reducido; no se ejecutó un APK en este entorno.
+
+## Unidad funcional — separación de Programadas y Algún día — 2026-10-26
+
+- [x] Separar las etapas `SCHEDULED` y `SOMEDAY` en dominio, navegación, copy, consultas y avance de la Revisión semanal.
+- [x] Usar las preguntas «¿Estas fechas siguen siendo realistas?» y «¿Esto todavía merece espacio en tu sistema?» sin volver a presentar ambas como una etapa nueva combinada.
+- [x] Persistir las decisiones nuevas con los valores de etapa propios, manteniendo `REVIEWED`/`OMITTED` y sin mezclar decisiones históricas de `SCHEDULED_SOMEDAY`.
+- [x] Mantener sesiones existentes con `current_step = 'SCHEDULED_SOMEDAY'`: se leen como etapa legacy, conservan su consulta combinada y avanzan al cierre en vez de quedar bloqueadas.
+- [x] No cambiar el contrato de backups: `current_step` y `review_decisions.step` ya eran strings validados, por lo que los backups anteriores siguen importando sin subir `BACKUP_SCHEMA_VERSION`.
+- [x] Conservar `Poner al día mi sistema`, decisiones, busy guards, motion y el alcance sin reflexión libre ni calendario externo.
+
+### Evidencia y riesgos
+
+- **Archivos:** `src/features/review/domain/review.ts`, `src/features/review/data/reviewRepository.ts`, `src/features/review/reviewPresentation.ts`, `src/features/review/reviewNavigation.ts`, `app/review.tsx`, tests de revisión y este documento.
+- **Compatibilidad:** no se ejecuta una migración destructiva ni se reescriben decisiones legacy; el valor `SCHEDULED_SOMEDAY` permanece aceptado solo para sesiones y decisiones históricas.
+- **Verificación:** `npm run typecheck` — 0 errores; `npm run lint` — 0 errores; `npm test -- --run` — 20 archivos, 68 pruebas aprobadas.
+- **Riesgos:** la etapa legacy conserva temporalmente copy combinado únicamente para sesiones ya existentes; queda pendiente validación visual Android con lector de pantalla, fuentes grandes, dark mode, safe areas y movimiento reducido.

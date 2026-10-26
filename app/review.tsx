@@ -5,7 +5,7 @@ import { Ionicons } from "@expo/vector-icons";
 import Animated, { FadeIn, FadeOut, LinearTransition, ReduceMotion, useAnimatedStyle, useReducedMotion, useSharedValue, withTiming } from "react-native-reanimated";
 
 import { useReviewRepository } from "@/src/features/review/data/useReviewRepository";
-import { REVIEW_STEPS, type ReviewDecisionSummary, type ReviewSession, type ReviewStep, type ReviewSummary } from "@/src/features/review/domain/review";
+import { REVIEW_STEPS, type ReviewDecisionSummary, type ReviewSession, type ReviewStepLike, type ReviewSummary } from "@/src/features/review/domain/review";
 import { getReviewStepCopy, REVIEW_ENTRY_SUMMARY } from "@/src/features/review/reviewPresentation";
 import { Screen } from "@/src/shared/ui/Screen";
 import { PageHero } from "@/src/shared/ui/PageHero";
@@ -87,7 +87,7 @@ export default function ReviewScreen() {
   if (!started) return <ReviewEntry colors={colors} busy={busy} summary={summary} hasInProgress={Boolean(session)} error={error} onBegin={() => void beginReview()} onExit={() => router.back()} />;
   if (!session) return null;
 
-  const stepIndex = REVIEW_STEPS.indexOf(session.currentStep);
+  const stepIndex = session.currentStep === "SCHEDULED_SOMEDAY" ? REVIEW_STEPS.indexOf("SCHEDULED") : REVIEW_STEPS.indexOf(session.currentStep);
   const isClosure = session.currentStep === "CLOSURE";
   const copy = getReviewStepCopy(session.currentStep);
   return <Screen>
@@ -135,7 +135,7 @@ function ReviewProgress({ colors, progress }: { colors: ReturnType<typeof useApp
   return <View accessibilityLabel={`Progreso de revisión: ${progress.reviewed} revisados, ${progress.omitted} omitidos y ${progress.undecided} sin decidir de ${progress.total}`} accessibilityRole="progressbar" accessibilityValue={{ min: 0, max: progress.total, now: progress.total - progress.undecided }} style={[styles.progress, { backgroundColor: colors.outline }]}><Animated.View style={[styles.progressFill, { backgroundColor: colors.primary }, fillStyle]} /></View>;
 }
 
-function ReviewItem({ item, busy, colors, step, onDecide }: { item: { id: string; title: string; state: string; decision: "REVIEWED" | "OMITTED" | null }; busy: boolean; colors: ReturnType<typeof useAppTheme>; step: ReviewStep; onDecide: (entityId: string, decision: "REVIEWED" | "OMITTED") => Promise<void> }) {
+function ReviewItem({ item, busy, colors, step, onDecide }: { item: { id: string; title: string; state: string; decision: "REVIEWED" | "OMITTED" | null }; busy: boolean; colors: ReturnType<typeof useAppTheme>; step: ReviewStepLike; onDecide: (entityId: string, decision: "REVIEWED" | "OMITTED") => Promise<void> }) {
   const reducedMotion = useReducedMotion();
   return <Motion><Animated.View layout={reducedMotion ? undefined : LinearTransition.duration(220).reduceMotion(ReduceMotion.System)} style={[styles.item, { borderColor: colors.outline, backgroundColor: colors.surface }]}><Pressable accessibilityRole="button" accessibilityLabel={item.title} accessibilityHint="Abre el elemento para revisarlo" onPress={() => router.navigate(getReviewItemRoute(step, item.id))}><Text style={{ color: colors.text }}>{item.title}</Text></Pressable><ReviewDecisionStatus colors={colors} decision={item.decision} /><View style={styles.itemActions}><ActionButton disabled={busy} variant={item.decision === "REVIEWED" ? "primary" : "secondary"} onPress={() => void onDecide(item.id, "REVIEWED")}>Marcar revisado</ActionButton><ActionButton disabled={busy} variant={item.decision === "OMITTED" ? "primary" : "secondary"} onPress={() => void onDecide(item.id, "OMITTED")}>Omitir</ActionButton></View></Animated.View></Motion>;
 }

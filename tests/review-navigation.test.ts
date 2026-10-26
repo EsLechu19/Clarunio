@@ -10,7 +10,8 @@ describe("navegación de elementos de revisión", () => {
   it("lleva etapas de acciones a su detalle", () => {
     expect(getReviewItemRoute("NEXT", "item-1")).toBe("/item/item-1");
     expect(getReviewItemRoute("WAITING", "item-2")).toBe("/item/item-2");
-    expect(getReviewItemRoute("SCHEDULED_SOMEDAY", "item-3")).toBe("/item/item-3");
+    expect(getReviewItemRoute("SCHEDULED", "item-3")).toBe("/item/item-3");
+    expect(getReviewItemRoute("SOMEDAY", "item-4")).toBe("/item/item-4");
   });
 
   it("lleva proyectos sin siguiente acción a su detalle", () => {
