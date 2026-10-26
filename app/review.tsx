@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ActivityIndicator, Alert, Pressable, StyleSheet, Text, View } from "react-native";
 import { router, useFocusEffect } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -28,61 +28,90 @@ export default function ReviewScreen() {
   const [started, setStarted] = useState(false);
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
   const [error, setError] = useState<string | null>(null);
+  const sessionRef = useRef<ReviewSession | null>(null);
+  const startedRef = useRef(false);
+  const summaryRef = useRef<ReviewSummary | null>(null);
+  const hasLoadedRef = useRef(false);
   const today = localDate();
 
-  const load = useCallback(async () => {
-    try {
-      setStatus("loading"); setError(null);
-      const loadedSummary = await repository.getSummary(today);
-      const inProgress = await repository.getInProgress("WEEKLY");
-      setSummary(loadedSummary);
-      if (!started) setSession(inProgress);
-      if (started && session) await loadSession(session, loadedSummary);
-      setStatus("ready");
-    } catch (cause) { setError(cause instanceof Error ? cause.message : "No se pudo cargar la revisión."); setStatus("error"); }
-  }, [repository, session, started, today]);
+  const setCurrentSession = useCallback((nextSession: ReviewSession | null) => {
+    sessionRef.current = nextSession;
+    setSession(nextSession);
+  }, []);
+
+  const setCurrentSummary = useCallback((nextSummary: ReviewSummary | null) => {
+    summaryRef.current = nextSummary;
+    setSummary(nextSummary);
+  }, []);
+
+  const setReviewStarted = useCallback((nextStarted: boolean) => {
+    startedRef.current = nextStarted;
+    setStarted(nextStarted);
+  }, []);
 
   const loadSession = useCallback(async (loadedSession: ReviewSession, loadedSummary: ReviewSummary) => {
-    setSession(loadedSession);
+    setCurrentSession(loadedSession);
     const loadedItems = await repository.listStepItems(loadedSession.currentStep, today);
     const decisions = await repository.listDecisions(loadedSession.id, loadedSession.currentStep);
     setItems(loadedItems.map((item) => ({ ...item, decision: decisions.find((decision) => decision.entityId === item.id)?.decision ?? null })));
     setProgress(loadedSession.currentStep === "CLOSURE" ? await repository.getSessionDecisionSummary(loadedSession.id, today) : await repository.getDecisionSummary(loadedSession.id, loadedSession.currentStep, loadedItems.length));
-    setSummary(loadedSummary);
-  }, [repository, today]);
+    setCurrentSummary(loadedSummary);
+  }, [repository, setCurrentSession, setCurrentSummary, today]);
 
-  useFocusEffect(useCallback(() => { void load(); }, [load]));
+  const loadEntry = useCallback(async () => {
+    const hasExistingContent = hasLoadedRef.current || summaryRef.current !== null || sessionRef.current !== null;
+    try {
+      if (!hasExistingContent) setStatus("loading");
+      setError(null);
+      const loadedSummary = await repository.getSummary(today);
+      const inProgress = await repository.getInProgress("WEEKLY");
+      setCurrentSummary(loadedSummary);
+      if (!startedRef.current) setCurrentSession(inProgress);
+      else {
+        const currentSession = inProgress ?? sessionRef.current;
+        if (currentSession) await loadSession(currentSession, loadedSummary);
+      }
+      hasLoadedRef.current = true;
+      setStatus("ready");
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "No se pudo cargar la revisión.");
+      setStatus(hasExistingContent || summaryRef.current !== null || sessionRef.current !== null ? "ready" : "error");
+    }
+  }, [loadSession, repository, setCurrentSession, setCurrentSummary, today]);
+
+  useFocusEffect(useCallback(() => { void loadEntry(); }, [loadEntry]));
 
   async function beginReview() {
     if (busy || !summary) return;
     setBusy(true); setError(null);
     try {
-      const nextSession = session ?? await repository.resumeOrCreate("WEEKLY", summary);
-      setStarted(true);
+      const nextSession = sessionRef.current ?? await repository.resumeOrCreate("WEEKLY", summary);
+      setReviewStarted(true);
       await loadSession(nextSession, summary);
     } catch (cause) { setError(cause instanceof Error ? cause.message : "No se pudo comenzar la revisión."); }
     finally { setBusy(false); }
   }
   async function next() {
-    if (busy || !session || !summary) return;
+    const currentSession = sessionRef.current;
+    if (busy || !currentSession || !summary) return;
     const continueNext = await confirmIfUndecided();
     if (!continueNext) return;
     setBusy(true);
-    try { const updated = await repository.advance(session, summary); await loadSession(updated, summary); }
+    try { const updated = await repository.advance(currentSession, summary); await loadSession(updated, summary); }
     catch (cause) { setError(cause instanceof Error ? cause.message : "No se pudo avanzar la revisión."); }
     finally { setBusy(false); }
   }
-  async function finish() { if (busy || !session || !summary) return; const continueFinish = await confirmIfUndecided(); if (!continueFinish) return; setBusy(true); try { setSession(await repository.complete(session, summary)); } catch (cause) { setError(cause instanceof Error ? cause.message : "No se pudo terminar la revisión."); } finally { setBusy(false); } }
-  async function cancel() { if (busy || !session) return; setBusy(true); try { await repository.cancel(session); setStarted(false); router.back(); } catch (cause) { setError(cause instanceof Error ? cause.message : "No se pudo cancelar la revisión."); setBusy(false); } }
-  async function pause() { if (busy || !session) return; setBusy(true); try { await repository.pause(session); setStarted(false); router.back(); } catch (cause) { setError(cause instanceof Error ? cause.message : "No se pudo pausar la revisión."); setBusy(false); } }
-  async function decide(entityId: string, decision: "REVIEWED" | "OMITTED") { if (busy || !session) return; setBusy(true); try { await repository.saveDecision(session, entityId, session.currentStep, decision); await load(); } catch (cause) { setError(cause instanceof Error ? cause.message : "No se pudo guardar la decisión."); } finally { setBusy(false); } }
+  async function finish() { const currentSession = sessionRef.current; if (busy || !currentSession || !summary) return; const continueFinish = await confirmIfUndecided(); if (!continueFinish) return; setBusy(true); try { setCurrentSession(await repository.complete(currentSession, summary)); } catch (cause) { setError(cause instanceof Error ? cause.message : "No se pudo terminar la revisión."); } finally { setBusy(false); } }
+  async function cancel() { const currentSession = sessionRef.current; if (busy || !currentSession) return; setBusy(true); try { await repository.cancel(currentSession); setReviewStarted(false); router.back(); } catch (cause) { setError(cause instanceof Error ? cause.message : "No se pudo cancelar la revisión."); setBusy(false); } }
+  async function pause() { const currentSession = sessionRef.current; if (busy || !currentSession) return; setBusy(true); try { await repository.pause(currentSession); setReviewStarted(false); router.back(); } catch (cause) { setError(cause instanceof Error ? cause.message : "No se pudo pausar la revisión."); setBusy(false); } }
+  async function decide(entityId: string, decision: "REVIEWED" | "OMITTED") { const currentSession = sessionRef.current; if (busy || !currentSession) return; setBusy(true); try { await repository.saveDecision(currentSession, entityId, currentSession.currentStep, decision); await loadEntry(); } catch (cause) { setError(cause instanceof Error ? cause.message : "No se pudo guardar la decisión."); } finally { setBusy(false); } }
   async function confirmIfUndecided(): Promise<boolean> {
     if (progress.undecided === 0) return true;
     return new Promise((resolve) => Alert.alert("Quedan elementos sin decidir", `Hay ${progress.undecided} elemento${progress.undecided === 1 ? "" : "s"} sin marcar en esta etapa. ¿Querés continuar sin resolverlos?`, [{ text: "Volver", style: "cancel", onPress: () => resolve(false) }, { text: "Continuar sin resolver", style: "destructive", onPress: () => resolve(true) }]));
   }
 
   if (status === "loading") return <Screen><ActivityIndicator accessibilityLabel="Cargando revisión" color={colors.primary} /></Screen>;
-  if (status === "error") return <Screen><MascotIllustration size="compact" variant="error" /><Text accessibilityRole="alert" style={{ color: colors.error }}>{error}</Text><Pressable accessibilityRole="button" onPress={() => void load()}><Text style={{ color: colors.primary }}>Reintentar</Text></Pressable></Screen>;
+  if (status === "error") return <Screen><MascotIllustration size="compact" variant="error" /><Text accessibilityRole="alert" style={{ color: colors.error }}>{error}</Text><Pressable accessibilityRole="button" onPress={() => void loadEntry()}><Text style={{ color: colors.primary }}>Reintentar</Text></Pressable></Screen>;
   if (!summary) return null;
   if (!started) return <ReviewEntry colors={colors} busy={busy} summary={summary} hasInProgress={Boolean(session)} error={error} onBegin={() => void beginReview()} onExit={() => router.back()} />;
   if (!session) return null;
