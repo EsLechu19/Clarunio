@@ -12,6 +12,7 @@ import { Motion } from "@/src/shared/ui/Motion";
 import { BackButton, navigateBack } from "@/src/shared/ui/BackButton";
 import { captureExitDecision } from "@/src/shared/ui/captureExitPolicy";
 import { useResponsive } from "@/src/shared/ui/useResponsive";
+import { MascotIllustration } from "@/src/shared/ui/MascotIllustration";
 
 const SAVE_ERROR = "No se pudo guardar. Intenta otra vez; mantendremos tu texto en pantalla.";
 type CaptureStatus = "idle" | "saving" | "success";
@@ -99,6 +100,7 @@ export default function CaptureScreen() {
           </View>
         </Animated.View>
         <View style={[styles.help, { backgroundColor: colors.surfaceSoft }]}><Ionicons color={colors.primary} name="sparkles-outline" size={24} /><View style={styles.helpCopy}><Text style={[styles.helpTitle, { color: colors.text }]}>Después lo aclaramos</Text><Text style={{ color: colors.textSecondary }}>Guardá la idea sin decidir nada ahora. Clarunio la deja en tu bandeja.</Text></View></View>
+        {status === "success" ? <MascotIllustration accessibilityLabel="Mascota celebrando la captura guardada" variant="celebrating" size="compact" /> : null}
         {error ? <Animated.View style={shakeStyle}><Text accessibilityRole="alert" style={[styles.error, { color: colors.error }]}>{error}</Text></Animated.View> : null}
         </ScrollView></Motion>
       </KeyboardAvoidingView>

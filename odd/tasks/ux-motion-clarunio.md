@@ -233,3 +233,27 @@ Dar vida a la interfaz existente sin inventar negocio: mejorar jerarquía, tarje
 - **Accesibilidad:** cada fila expone rol de botón, label, hint y target táctil; la lista conserva el tema activo y `Motion` mantiene reduced motion.
 - **Verificación:** `npm run typecheck` — 0 errores; `npm run lint` — 0 errores; `npm test -- --run` — 19 archivos, 61 pruebas aprobadas.
 - **Riesgos:** queda pendiente validación visual en Android real con lector de pantalla, fuentes grandes, dark mode y movimiento reducido.
+
+## Unidad de trabajo — integración de mascotas — 2026-10-26
+
+- [x] Crear la primitiva reutilizable `MascotIllustration` con mapa de variantes, `Image`, `resizeMode="contain"`, tamaños responsive y accesibilidad configurable.
+- [x] Integrar mascotas únicamente en Bandeja vacía, Proyectos vacío, búsqueda sin resultados, Revisión, Recuperación, errores recuperables y confirmación breve de captura exitosa.
+- [x] Mantener dark mode, safe areas, reduced motion y la lógica GTD existente; no se agregó una animación nueva.
+- [x] Revisar los PNG antes de usarlos: las variantes seleccionadas son RGBA con transparencia en las esquinas y no se retocaron destructivamente.
+- [x] No agregar tests de UI; el mapa está encapsulado en la primitiva y no introduce lógica de dominio testeable sin forzar React Native.
+
+### Assets usados
+
+- `img/mascota_estado_vacio.png` — Bandeja vacía.
+- `img/mascota_pensando.png` — Proyectos vacío y búsqueda sin resultados.
+- `img/mascota_revision_semanal.png` — Revisión semanal.
+- `img/mascota_recuperacion.png` — Recuperación.
+- `img/mascota_estado_error.png` — Error recuperable en Revisión y Recuperación.
+- `img/mascota celebrando_accion_completada.png` — Confirmación de captura guardada.
+
+### Evidencia y riesgos
+
+- **Archivos:** `src/shared/ui/MascotIllustration.tsx`, `src/shared/ui/EmptyState.tsx`, `app/(tabs)/inbox.tsx`, `app/(tabs)/projects.tsx`, `app/search.tsx`, `app/review.tsx`, `app/recovery.tsx`, `app/capture.tsx`.
+- **Evidencia de assets:** los nueve PNG confirmados se inspeccionaron como RGBA; las esquinas fueron transparentes (`alpha=0`) en cada archivo. No se modificó ningún asset.
+- **Verificación:** `npm run typecheck` — 0 errores; `npm run lint` — 0 errores; `npm test -- --run` — 19 archivos, 61 pruebas aprobadas.
+- **Riesgos:** queda pendiente validación visual en Android real con lector de pantalla, fuentes grandes, dark mode, safe areas y movimiento reducido; la ruta con `ñ` y espacios debe validarse también en el bundle Android final.

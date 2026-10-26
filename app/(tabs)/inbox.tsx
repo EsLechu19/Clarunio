@@ -42,7 +42,7 @@ export default function InboxScreen() {
       </View>
       {loading ? <ActivityIndicator color={colors.primary} accessibilityLabel="Cargando bandeja" /> : null}
       {!loading && error ? <Pressable accessibilityRole="button" accessibilityLabel="Reintentar carga de bandeja" onPress={() => void loadItems()}><Text style={{ color: colors.error }}>No se pudo cargar la bandeja. Intenta otra vez.</Text></Pressable> : null}
-      {!loading && !error && items.length === 0 ? <EmptyState actionLabel="Capturar algo" icon="file-tray-outline" message="Tu bandeja está lista. Capturá algo para sacarlo de tu cabeza y aclararlo después." onAction={() => router.push("/capture")} /> : null}
+      {!loading && !error && items.length === 0 ? <EmptyState actionLabel="Capturar algo" icon="file-tray-outline" mascot="empty" message="Tu bandeja está lista. Capturá algo para sacarlo de tu cabeza y aclararlo después." onAction={() => router.push("/capture")} /> : null}
       {!loading && !error && items.length > 0 ? <View style={styles.list}>{items.map((item) => <Motion key={item.id}><InboxItemRow item={item} /></Motion>)}</View> : null}
     </Screen>
   );

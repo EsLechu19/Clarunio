@@ -40,7 +40,7 @@ export default function ProjectsScreen() {
       </ScrollView>
       {status === "loading" ? <LoadingState accessibilityLabel="Cargando proyectos" message="Cargando tus proyectos…" skeleton /> : null}
       {status === "error" ? <Pressable onPress={() => void load()}><Text style={{ color: colors.error }}>No se pudieron cargar los proyectos. Intenta otra vez.</Text></Pressable> : null}
-      {status === "ready" && projects.length === 0 ? <EmptyState message="Los proyectos nacen cuando aclaras una captura y descubres que requiere más de un paso." actionLabel="Capturar algo" onAction={() => router.push("/capture")} /> : null}
+      {status === "ready" && projects.length === 0 ? <EmptyState mascot="thinking" message="Los proyectos nacen cuando aclaras una captura y descubres que requiere más de un paso." actionLabel="Capturar algo" onAction={() => router.push("/capture")} /> : null}
       {status === "ready" ? projects.filter((project) => matchesProjectFilter(project, filter)).map((project) => <Animated.View key={project.id} entering={reducedMotion ? undefined : FadeIn.duration(220).reduceMotion(ReduceMotion.System)} exiting={reducedMotion ? undefined : FadeOut.duration(140).reduceMotion(ReduceMotion.System)} layout={reducedMotion ? undefined : LinearTransition.duration(220).reduceMotion(ReduceMotion.System)}><ProjectCard project={project} colors={colors} onPress={() => router.push(`/project/${project.id}`)} /></Animated.View>) : null}
     </Screen>
   );

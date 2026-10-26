@@ -12,6 +12,7 @@ import { Card } from "@/src/shared/ui/Card";
 import { ActionButton } from "@/src/shared/ui/ActionButton";
 import { Motion } from "@/src/shared/ui/Motion";
 import { getReviewItemRoute } from "@/src/features/review/reviewNavigation";
+import { MascotIllustration } from "@/src/shared/ui/MascotIllustration";
 
 const LABELS: Record<ReviewStep, string> = { INBOX: "Bandeja", NEXT: "Siguientes", WAITING: "Esperando", PROJECTS: "Proyectos", SCHEDULED_SOMEDAY: "Programadas y algún día", CLOSURE: "Cierre" };
 
@@ -46,12 +47,13 @@ export default function ReviewScreen() {
   async function pause() { if (!session) return; try { await repository.pause(session); router.back(); } catch (cause) { setError(cause instanceof Error ? cause.message : "No se pudo pausar la revisión."); } }
 
   if (status === "loading") return <Screen><ActivityIndicator accessibilityLabel="Cargando revisión" color={colors.primary} /></Screen>;
-  if (status === "error") return <Screen><Text accessibilityRole="alert" style={{ color: colors.error }}>{error}</Text><Pressable accessibilityRole="button" onPress={() => void load()}><Text style={{ color: colors.primary }}>Reintentar</Text></Pressable></Screen>;
+  if (status === "error") return <Screen><MascotIllustration size="compact" variant="error" /><Text accessibilityRole="alert" style={{ color: colors.error }}>{error}</Text><Pressable accessibilityRole="button" onPress={() => void load()}><Text style={{ color: colors.primary }}>Reintentar</Text></Pressable></Screen>;
   if (!session || !summary) return null;
   const stepIndex = REVIEW_STEPS.indexOf(session.currentStep);
   const isClosure = session.currentStep === "CLOSURE";
   return <Screen>
-       <PageHero title="Revisión semanal" subtitle="Comprobemos que tus pendientes siguen claros y actualizados." showBack backFallback="/(tabs)" />
+        <PageHero title="Revisión semanal" subtitle="Comprobemos que tus pendientes siguen claros y actualizados." showBack backFallback="/(tabs)" />
+     <MascotIllustration accessibilityLabel="Mascota acompañando la revisión semanal" variant="weeklyReview" size="compact" />
     <Text style={{ color: colors.textSecondary }}>Etapa {stepIndex + 1} de {REVIEW_STEPS.length}: {LABELS[session.currentStep]}</Text>
      <View accessibilityLabel={`Progreso de revisión: etapa ${stepIndex + 1} de ${REVIEW_STEPS.length}`} accessibilityRole="progressbar" accessibilityValue={{ min: 1, max: REVIEW_STEPS.length, now: stepIndex + 1 }} style={[styles.progress, { backgroundColor: colors.outline }]}><View style={[styles.progressFill, { backgroundColor: colors.primary, width: `${((stepIndex + 1) / REVIEW_STEPS.length) * 100}%` }]} /></View>
     {error ? <Text accessibilityRole="alert" style={{ color: colors.error }}>{error}</Text> : null}
