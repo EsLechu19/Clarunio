@@ -288,3 +288,21 @@ Dar vida a la interfaz existente sin inventar negocio: mejorar jerarquía, tarje
 - **Patrones adaptados:** `LinearTransition` para resize/reflow de tarjetas, `FadeIn`/`FadeOut` para el swap de estado e icono y `withTiming` para el progreso; se usaron únicamente primitivas existentes de React Native/Reanimated.
 - **Accesibilidad:** cada estado conserva una etiqueta textual y una actualización polite; la barra mantiene `progressbar` y valores semánticos; las acciones existentes siguen teniendo targets táctiles y labels explícitos.
 - **Riesgos:** falta validación visual en Android real con lector de pantalla, fuentes grandes, dark mode, safe areas y movimiento reducido; no se ejecutó un APK en este entorno.
+
+## Unidad de trabajo — entrada humana de Revisión semanal — 2026-10-26
+
+- [x] Agregar una entrada previa a la sesión con `Poner al día mi sistema`, explicación tranquilizadora, resumen real de Bandeja, Siguientes, Esperando y Proyectos sin siguiente acción, CTA de comienzo/reanudación y salida clara.
+- [x] Consultar `getInProgress` antes de crear una sesión; `resumeOrCreate` solo se ejecuta al pulsar `Empezar revisión` y conserva la reanudación existente con `Continuar revisión`.
+- [x] Mantener los seis pasos internos y agruparlos visualmente como `Inbox`, `Poner al día`, `Mirar adelante` y `Cierre`, con preguntas humanas y orientación contextual.
+- [x] Reservar la mascota principalmente para la entrada y el cierre; conservar la accesibilidad sin repetir el contexto de la fila en el label de TalkBack.
+- [x] Mantener decisiones persistentes, busy guards, progreso, navegación a detalles, confirmaciones, dark mode, responsive, safe areas y reduced motion.
+- [x] No modificar migraciones, modelo de etapas, reglas GTD ni separar `SCHEDULED_SOMEDAY` en pasos persistentes.
+
+### Copy y evidencia
+
+- **Archivos:** `app/review.tsx`, `src/features/review/reviewPresentation.ts`, `tests/review-presentation.test.ts`.
+- **Decisión:** la entrada usa los conteos existentes del repositorio y no agrega métricas, porcentajes ni tiempo estimado; las preguntas traducen cada etapa sin cambiar su contrato persistente.
+- **Accesibilidad:** la mascota tiene una única descripción contextual en entrada/cierre; los elementos exponen su título una sola vez y conservan rol, hint y targets táctiles; el progreso sigue siendo una barra semántica.
+- **Tests:** `tests/review-presentation.test.ts` cubre la agrupación de los seis pasos y las cuatro claves reales del resumen, sin inicializar React Native.
+- **Verificación:** `npm run typecheck`, `npm run lint` y `npm test -- --run` pasan; el último ejecuta 20 archivos y 66 pruebas.
+- **Riesgos:** queda pendiente validación visual en Android real con lector de pantalla, fuentes grandes, dark mode, safe areas y movimiento reducido; no se ejecutó un APK en este entorno.
